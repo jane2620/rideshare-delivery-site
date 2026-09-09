@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Princeton University - Delivery Study Upload</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/resources/css/style.css">
+    <link rel="icon" href="/resources/images/favicon.ico" type="image/x-icon">
+    <style>
+        .placeholder-image {
+            width: 400px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            background: #f5f5f5;
+        }
+        .copy-field {
+            display: flex;
+            gap: 0.5rem;
+            align-items: stretch;
+        }
+        .copy-field textarea {
+            flex: 1 1 auto;
+            width: auto !important;
+            min-width: 0;
+        }
+        .copy-field .button {
+            flex: 0 0 auto;
+            white-space: nowrap;
+        }
+        details.dropdown-details summary::-webkit-details-marker { display: none; }
+        details.dropdown-details summary { list-style: none; }
+        details.dropdown-details .dropdown-chevron { display: inline-block; transition: transform 0.2s ease; }
+        details.dropdown-details[open] .dropdown-chevron { transform: rotate(90deg); }
+    </style>
+</head>
+<body data-upload-tag="delivery" data-study-type="delivery">
+    <section class="page-content">
+        <div class="hero-body" style="padding-top: 2rem;">
+            <div class="columns is-mobile">
+                <div class="column is-2-tablet is-5-mobile is-offset-2-tablet" style="padding: 0;">
+                    <figure class="image">
+                        <img src="/resources/images/princeton-logo.png" alt="Princeton Logo">
+                    </figure>
+                </div>
+            </div>
+
+            <div class="columns is-centered">
+                <div class="column is-8">
+                    <div class="box">
+                        <h1 class="title is-3">Upload Delivery Data Files</h1>
+                        <p class="block">
+                            Upload your <strong>delivery history data downloads</strong> from DoorDash, Grubhub, and Instacart.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Downloads Section (before email receipts) -->
+            <div class="columns is-centered" style="margin-top: 1rem;">
+                <div class="column is-8">
+                    <div class="box">
+                        <h2 class="title is-4">Delivery Data Files</h2>
+                        <p class="block">
+                            You should have requested your delivery history data from the platforms you use in Phase 1. If you have not, please do so now. Data requests often take <strong>24-72 hours</strong> for the platforms to process.
+                        </p>
+
+                        <details class="dropdown-details" style="margin-bottom: 1rem;">
+                            <summary class="is-clickable" style="cursor: pointer; color: var(--bulma-link); text-decoration: underline;">
+                                <span class="icon-text"><span class="icon"><i class="fas fa-chevron-right dropdown-chevron"></i></span> I need to request my data</span>
+                            </summary>
+                            <div class="notification is-info is-light" style="margin-top: 0.75rem;">
+                                <p>Follow these links to download your data. <strong>You will have to log in to your accounts.</strong></p>
+                                <ol type="1" style="margin-left: 2rem;">
+                                    <li><a href="https://www.grubhub.com/help/privacy/manage-your-data" target="_blank">Request Grubhub data</a>. After logging in, click "Submit Request" under "Get a copy of your personal information".</li>
+                                    <li><a href="https://www.doordash.com/consumer/privacy/manage_account" target="_blank">Request DoorDash data</a> After logging in, click "Request Archive" under "Account Data".</li>
+                                    <li><a href="https://www.instacart.com/user_privacy/form" target="_blank">Request Instacart data</a>. After logging in, select "Request Type: Access My Personal information" and click Submit.</li>
+                                </ol>
+                            </div>
+                        </details>
+
+                        <!-- Reuse the existing upload_data flow for anonymized delivery data -->
+                        <div id="formSection">
+                            <h3 class="title is-5">Upload Delivery History Files</h3>
+                            <div class="field">
+                                <label class="label">Prolific ID</label>
+                                <div class="control has-icons-left">
+                                    <input id="emailInput" class="input" type="text" placeholder="Enter your Prolific ID">
+                                    <span class="icon is-small is-left">
+                                        <i class="fas fa-envelope"></i>
+                                    </span>
+                                </div>
+                                <p class="help">Use the same Prolific ID you used in the study.</p>
+                            </div>
+
+                            <h3 class="title is-5">Finding Emails from Platforms</h3>
+                            <p class="block">
+                                When your export is ready, the platform will email you. In your email associated with each platform you have an account with, paste one of these into the search bar to find the email:
+                            </p>
+                            <ul class="block" style="margin-left: 1.25rem; list-style: disc;">
+                                <li style="margin-bottom: 0.75rem;">
+                                    <strong>DoorDash</strong>
+                                    <ul style="margin-top: 0.35rem; margin-left: 1.25rem; list-style: circle;">
+                                        <li><code>from:no-reply@doordash.com "Your DoorDash data archive is ready for download"</code></li>
+                                    </ul>
+                                </li>
+                                <li style="margin-bottom: 0.75rem;">
+                                    <strong>Grubhub</strong>
+                                    <ul style="margin-top: 0.35rem; margin-left: 1.25rem; list-style: circle;">
+                                        <li><code>from:help_me@eat.grubhub.com</code></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <strong>Instacart</strong>
+                                    <ul style="margin-top: 0.35rem; margin-left: 1.25rem; list-style: circle;">
+                                        <li><code>from:noreply@m.onetrust.com "Your Privacy Request Has Been Updated" "Instacart"</code></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                            <p class="block">
+                                Follow the instructions in the email and in your browser to view and download your data requests. You may have to log into your account.
+                            </p>
+                            <hr>
+
+                            <p class="block">Select the delivery apps you have history data for:</p>
+
+                            <!-- Hidden checkboxes for Uber/Lyft to keep hub.js happy (always unchecked) -->
+                            <input type="checkbox" id="hasUberCheckbox" style="display:none;">
+                            <input type="checkbox" id="hasLyftCheckbox" style="display:none;">
+
+                            <div class="field"><label class="checkbox"><input type="checkbox" id="hasGrubhubCheckbox"> I have Grubhub data to upload (e.g., export.zip, export.xlsx)</label></div>
+                            <div class="field"><label class="checkbox"><input type="checkbox" id="hasDoorDashCheckbox"> I have DoorDash data to upload (e.g., data_archive.zip)</label></div>
+                            <div class="field"><label class="checkbox"><input type="checkbox" id="hasInstacartCheckbox"> I have Instacart data to upload (orders_orders.csv and orders_order_deliveries.csv)</label></div>
+
+                            <br>
+
+                            <div id="grubhubUploadSection" style="display: none; margin-top: 1rem;">
+                                <p><strong>export.zip to upload:</strong></p>
+                                <div id="grubhubFileInputDiv" class="file is-primary has-name">
+                                    <label class="file-label">
+                                        <input id="grubhubFileInput" class="file-input" type="file" accept=".zip">
+                                        <span class="file-cta"><span class="file-icon"><i class="fas fa-upload"></i></span><span class="file-label">Choose Grubhub File</span></span>
+                                        <span id="grubhubFileName" class="file-name">No file selected</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="doorDashUploadSection" style="display: none; margin-top: 1rem;">
+                                <p><strong>data_archive.zip to upload:</strong></p>
+                                <div id="doorDashFileInputDiv" class="file is-primary has-name">
+                                    <label class="file-label">
+                                        <input id="doorDashFileInput" class="file-input" type="file" accept=".zip">
+                                        <span class="file-cta"><span class="file-icon"><i class="fas fa-upload"></i></span><span class="file-label">Choose DoorDash File</span></span>
+                                        <span id="doorDashFileName" class="file-name">No file selected</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="instacartUploadSection" style="display: none; margin-top: 1rem;">
+                                <p><strong>Instacart CSV files to upload:</strong></p>
+                                <div id="instacartOrdersFileInputDiv" class="file is-primary has-name" style="margin-bottom: 1rem;">
+                                    <label class="file-label">
+                                        <input id="instacartOrdersFileInput" class="file-input" type="file" accept=".csv">
+                                        <span class="file-cta"><span class="file-icon"><i class="fas fa-upload"></i></span><span class="file-label">Choose orders_orders.csv</span></span>
+                                        <span id="instacartOrdersFileName" class="file-name">No file selected</span>
+                                    </label>
+                                </div>
+                                <div id="instacartDeliveriesFileInputDiv" class="file is-primary has-name">
+                                    <label class="file-label">
+                                        <input id="instacartDeliveriesFileInput" class="file-input" type="file" accept=".csv">
+                                        <span class="file-cta"><span class="file-icon"><i class="fas fa-upload"></i></span><span class="file-label">Choose orders_order_deliveries.csv</span></span>
+                                        <span id="instacartDeliveriesFileName" class="file-name">No file selected</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="file-error-message" class="hidden error-message" style="color: red; margin-top: 10px;">
+                                File selection unsuccessful, please try again.
+                            </div>
+                            <div id="file-error-message-special" class="hidden error-message" style="color: orange; margin-top: 10px;"></div>
+
+                            <p style="margin-top: 1rem;">Data Preview:</p>
+                            <textarea id="dataVisual" class="textarea" rows="6" readonly placeholder="Data will appear here after you choose your files..."></textarea>
+                            <p id="previewEmailHint" class="help is-info hidden" style="margin-top: 0.5rem;">
+                                Preview is ready. Enter your email address above to enable <strong>Submit Delivery Data</strong>.
+                            </p>
+
+                            <div class="has-text-centered" style="margin-top: 1rem;">
+                                <div id="submit-error" class="hidden error-message" style="color: red; margin-bottom: 10px;">
+                                    Upload failed. Please check your connection.
+                                </div>
+                                <button id="submitZipButton" class="button is-link is-medium" style="display: none; margin-top: 1rem;">
+                                    Submit Delivery Data
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <script src="/resources/js/jszip.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="/resources/js/hub.js"></script>
+</body>
+</html>
+

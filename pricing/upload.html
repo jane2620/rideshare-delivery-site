@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>Princeton University - Rideshare Survey</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/resources/css/style.css">
+    <link rel="icon" href="/resources/images/favicon.ico" type="image/x-icon">
+
+    <style>
+        .step-container {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hidden {
+            display: none !important;
+        }
+        .collapsible-content {
+            margin-top: 1rem;
+        }
+        .pdf-container {
+            margin-top: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .pdf-container object {
+            width: 100%;
+            height: 600px;
+        }
+        /* Keep Yes/No above embedded PDF plug-in hit targets in some browsers */
+        .consent-choice-row {
+            position: relative;
+            z-index: 2;
+            margin-top: 0.75rem;
+        }
+    </style>
+</head>
+
+<body>
+    <section class="page-content">
+        <div class="hero-body" style="padding-top: 2rem;">
+            <div class="columns is-mobile">
+                <div class="column is-2-tablet is-5-mobile is-offset-2-tablet" style="padding: 0;">
+                    <figure class="image">
+                        <img src="/resources/images/princeton-logo.png" alt="Princeton Logo">
+                    </figure>
+                </div>
+            </div>
+
+            <!-- Return Participant Section -->
+            <div id="returnParticipantSection" class="columns is-centered">
+                <div class="column is-6 is-offset-3">
+                    <div class="box">
+                        <!-- <h3 class="title is-5">Returning Participant?</h3> -->
+                        <!-- <p class="block">Enter your Prolific ID to continue:</p> -->
+                        <div class="field has-addons">
+                            <div class="control is-expanded">
+                                <input id="returnParticipantIdInput" class="input" type="text" placeholder="Enter your Prolific ID">
+                            </div>
+                            <div class="control">
+                                <button id="continueWithIdButton" class="button is-link">Continue</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload Sections (hidden until Prolific ID is provided) -->
+            <div id="uploadSections" style="display: none;">
+                <!-- Kept outside Part 2/3 so ID is available before consent gate; hub.js reads this for uploads + consent. -->
+                <input id="prolificIdInput" type="hidden" autocomplete="off" />
+                <div class="columns is-centered" style="margin-bottom: 3rem;">
+                    <div class="column is-8">
+                        <h1 class="title is-3">Phase 2: Upload Your Uber Ride History</h1>
+                        <p id="prolificParticipantNote" class="subtitle is-6 has-text-grey mb-4" style="display: none;" aria-live="polite"></p>
+                        <p>
+                            If you have any questions, please contact us at <a href="mailto:rideshare-study@princeton.edu">rideshare-study@cs.princeton.edu</a>.
+                            <br>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="columns is-centered" style="margin-bottom: 2rem;">
+                    <div class="column is-8">
+                        <h2 class="title is-4">Part 1: Consent</h2>
+                        <div id="phase2ConsentExpandedContent">
+                            <p class="subtitle is-5 mb-3" style="font-weight: 600;">Research Study Consent Form - Princeton University IRB #19357</p>
+                            <p class="mb-4">Thank you for your interest in participating in our research study! Please read the official consent form below in full before agreeing to participate.</p>
+                            <div class="pdf-container">
+                                <object data="/pricing/Consent_Phase2_IRB19357_20260407.pdf" type="application/pdf" width="100%" height="600px">
+                                    <p>
+                                        Your browser cannot display the PDF.
+                                        <a href="/pricing/Consent_Phase2_IRB19357_20260407.pdf" target="_blank" rel="noopener">Open the consent form in a new tab.</a>
+                                    </p>
+                                </object>
+                            </div>
+                            <p class="mt-4 mb-3"><strong>Do you consent to participate in this research?</strong></p>
+                            <div class="buttons is-flex-wrap consent-choice-row">
+                                <button type="button" id="phase2ConsentYesBtn" class="button is-light" onclick="pricingPhase2ConsentChoice(true)">Yes, I consent</button>
+                                <button type="button" id="phase2ConsentNoBtn" class="button is-light" onclick="pricingPhase2ConsentChoice(false)">No, I do not consent</button>
+                            </div>
+                        </div>
+                        <div id="phase2ConsentMinimized" class="hidden" style="display: none;">
+                            <p class="notification is-success is-light mb-3" role="status">You have consented to participate in this research.</p>
+                            <button type="button" class="button is-text is-small" onclick="togglePhase2ConsentFormExpanded(true)">Show full consent form</button>
+                        </div>
+                        <p id="phase2-consent-error" class="help is-danger hidden" role="alert"></p>
+                    </div>
+                </div>
+
+                <div id="uploadParts2And3" class="hidden" style="display: none;">
+
+                <div id="step-zip" class="step-container">
+                <div class="columns is-centered">
+                    <div class="column is-8">
+                        <h2 class="title is-4">Part 2: Request Data (if not yet completed)</h2>
+                        <div class="notification is-info is-light">
+                            <p><strong>A link to download your data should have been automatically emailed to the email address you have on file with Uber. Search your email for "Your Uber data is ready for download                                ". If you do not see an email or if the link has expired, please request your data <a href="https://myprivacy.uber.com/exploreyourdata/download" target="_blank">here</a>.</strong></p>
+                            <p style="font-size: 0.85rem; margin-top: 0.5rem;">(Note: Data requests typically take 24-72 hours to process)</p>
+                            
+                            <hr style="background-color: #aebfde; height: 1px; margin: 1rem 0;">
+                            
+                            <!-- Collapsible section for upload instructions PDF -->
+                            <div class="collapsible-section">
+                                <button class="button is-text" id="toggleInstructions" onclick="toggleInstructions()" style="padding: 0; text-decoration: underline;">
+                                    Click here to show the instructions (PDF) about how to request your data if you have not already.
+                                </button>
+                                <div id="instructionsContent" class="collapsible-content" style="display: none;">
+                                    <div class="pdf-container">
+                                        <object data="https://rideshare-study.cs.princeton.edu/resources/request_data_guide.pdf" type="application/pdf" width="100%" height="600px">
+                                            <p>
+                                                Your browser cannot display the PDF. 
+                                                <a href="https://rideshare-study.cs.princeton.edu/resources/request_data_guide.pdf" target="_blank" rel="noopener">Click here to open the guide in a new tab.</a>
+                                            </p>
+                                        </object>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="formSection">
+                    <div class="columns is-centered">
+                        <div class="column is-8">
+                            <h2 class="title is-4">Part 3: Upload Data</h2>
+                            <div id="uberUploadSection">
+                                <p><strong>Uber .zip to upload:</strong></p>
+                                <div id="uberFileInputDiv" class="file is-primary has-name">
+                                    <label class="file-label">
+                                        <input id="uberFileInput" class="file-input" type="file" accept=".zip">
+                                        <span class="file-cta"><span class="file-icon"><i class="fas fa-upload"></i></span><span class="file-label">Choose Uber File</span></span>
+                                        <span id="uberFileName" class="file-name">No file selected</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="file-error-message" class="error-message" style="color: red; margin-top: 10px; display: none;">
+                                File selection unsuccessful, please try again.
+                            </div>
+                            <div id="file-error-message-special" class="error-message" style="color: orange; margin-top: 10px; display: none;"></div>
+                            <br>
+                            <p>We will display a preview of the minimized data you have uploaded below. Please check that the data is correct before submitting.</p>
+                            <br>
+                            <p><b>Data Preview:</b></p>
+                            <textarea id="dataVisual" class="textarea" rows="6" readonly placeholder="Data will appear here..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="columns is-centered">
+                        <div class="column is-8 has-text-centered">
+                            <div id="submit-error" class="hidden error-message" style="color: red; margin-bottom: 10px;">
+                                Upload failed. Please check your connection.
+                            </div>
+                            <button id="submitZipButton" class="button is-link is-medium" style="display: none; margin-top: 1rem;">
+                                Submit Ride Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+            <!-- End of Upload Sections -->
+
+        </div>
+    </section>
+
+    <script>
+        function toggleInstructions() {
+            const content = document.getElementById('instructionsContent');
+            const button = document.getElementById('toggleInstructions');
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                button.innerHTML = 'Hide step-by-step data request guide';
+            } else {
+                content.style.display = 'none';
+                button.innerHTML = 'Click here to show the instructions (PDF) about how to request your data.';
+            }
+        }
+    </script>
+
+    <script src="/resources/js/jszip.js"></script>
+    
+    <script src="/pricing/hub.js"></script>
+    
+    <script>
+        // Fix error message display - sync is-active class with display style
+        function setupErrorMessages() {
+            const errorMsg = document.getElementById('file-error-message');
+            const errorMsgSpecial = document.getElementById('file-error-message-special');
+            
+            function syncDisplay(el) {
+                if (el) {
+                    if (el.classList.contains('is-active')) {
+                        el.style.display = 'block';
+                    } else {
+                        el.style.display = 'none';
+                    }
+                }
+            }
+            
+            // Watch for class changes on error messages
+            if (errorMsg) {
+                const observer = new MutationObserver(function() { syncDisplay(errorMsg); });
+                observer.observe(errorMsg, { attributes: true, attributeFilter: ['class'] });
+                syncDisplay(errorMsg); // Initial sync
+            }
+            
+            if (errorMsgSpecial) {
+                const observerSpecial = new MutationObserver(function() { syncDisplay(errorMsgSpecial); });
+                observerSpecial.observe(errorMsgSpecial, { attributes: true, attributeFilter: ['class'] });
+                syncDisplay(errorMsgSpecial); // Initial sync
+            }
+        }
+        
+        // Setup error messages when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setupErrorMessages);
+        } else {
+            setupErrorMessages();
+        }
+    </script>
+</body>
+</html>

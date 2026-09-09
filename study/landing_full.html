@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>Rideshare Study</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/resources/css/style.css">
+    <link rel="icon" href="/resources/images/favicon.ico" type="image/x-icon">
+
+    <style>
+        .landing-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .study-overview {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        .action-cards {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        .action-card {
+            flex: 1;
+            min-width: 250px;
+        }
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <section class="page-content">
+        <div class="hero-body" style="padding-top: 2rem;">
+            <div class="columns is-mobile">
+                <div class="column is-2-tablet is-5-mobile is-offset-2-tablet" style="padding: 0;">
+                    <figure class="image">
+                        <img src="/resources/images/princeton-logo.png" alt="Princeton Logo">
+                    </figure>
+                </div>
+            </div>
+
+            <div class="landing-container">
+                <h1 class="title is-4 has-text-centered">Understanding Rideshare and Delivery Platform Algorithms</h1>
+                <h3 class="title is-5 has-text-centered">Princeton University IRB #18415</h3>
+                
+                <div class="study-overview">
+                    <h2 class="title is-4">Study Overview</h2>
+                    <p class="block">
+                        Thank you for participating in our research study! We're interested in learning more about rideshare and delivery platforms, and how people use them. In this study, we are interested in Uber, UberEats, Lyft, Doordash, Grubhub,and Instacart.
+                    </p>
+                    
+                    <h3 class="title is-5" style="margin-top: 1.5rem;">What You'll Be Asked to Do</h3>
+                    <p class="block">
+                        We will provide instructions and links to each phase of the survey to your email. As part of this study, you will be asked to complete four phases. You are currently in Phase 2, 3 or 4.
+                    </p>
+                    
+                    <style>
+                        .phase-block {
+                            background-color: #ffffff;
+                            border-radius: 12px;
+                            padding: 1rem 1.1rem;
+                            margin-bottom: 1rem;
+                            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                            border-left: 4px solid #3273dc;
+                            display: flex;
+                            align-items: stretch;
+                            justify-content: space-between;
+                            gap: 0.9rem;
+                        }
+                        .phase-block:last-child {
+                            margin-bottom: 0;
+                        }
+                        .phase-text {
+                            display: flex;
+                            flex-direction: column;
+                            gap: 0.25rem;
+                            flex: 1;
+                        }
+                        .phase-title {
+                            font-size: 1.2rem;
+                            font-weight: 600;
+                            color: #363636;
+                            margin-bottom: 0.15rem;
+                        }
+                        .phase-content {
+                            margin-left: 0.2rem;
+                            flex: 1;
+                        }
+                        .phase-content ul {
+                            list-style: none;
+                            padding-left: 0;
+                        }
+                        .phase-content li {
+                            padding: 0.25rem 0;
+                            padding-left: 1.25rem;
+                            position: relative;
+                            font-size: 1.05rem;
+                        }
+                        .phase-content li:before {
+                            content: "•";
+                            position: absolute;
+                            left: 0;
+                            color: #3273dc;
+                            font-weight: bold;
+                            font-size: 1.1rem;
+                            top: 0.25rem;
+                        }
+                        .phase-content ol {
+                            padding-left: 1.25rem;
+                            margin-top: 0.35rem;
+                        }
+                        .phase-content ol li {
+                            padding-left: 0;
+                        }
+                        .phase-content ol li:before {
+                            display: none;
+                        }
+                        .phase-block.completed {
+                            opacity: 0.6;
+                            border-left-color: #48c774;
+                        }
+                    </style>
+
+                    <div style="margin: 2rem 0;">
+                        <div class="phase-block completed">
+                            <div class="phase-text">
+                                <div class="phase-title">Phase 1: Onboarding <span style=" color: #6c757d; margin-left: 0.5rem; font-style: italic;">(Completed)</span></div>
+                                <div class="phase-content">
+                                    <ul>
+                                        <li>Learn about the study</li>
+                                        <li>Complete onboarding survey</li>
+                                        <li>Time: approximately 10 minutes</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="phase-block">
+                            <div class="phase-text">
+                                <div class="phase-title">
+                                    Phase 2: Screenshot collection (2 weeks)
+                                </div>
+                                <div class="phase-content">
+                                    <ol>
+                                        <li>Take screenshots of ride/delivery requests</li>
+                                        <li>Order ride/delivery</li>
+                                        <li>Receive ride/delivery</li>
+                                    </ol>
+                                </div>
+                            </div>
+                            <img class="phase-image" src="/resources/images/screenshots/uber_accept_screenshot.jpeg" alt="Phase illustration" style="width: 125px; height: auto; flex-shrink: 0; border-radius: 10px; object-fit: cover; display: block; background: #f6f6f6; border: 1px solid #e6e6e6;">
+                        </div>
+
+                        <div class="phase-block">
+                            <div class="phase-text">
+                                <div class="phase-title">Phase 3: Request data</div>
+                                <div class="phase-content">
+                                    <ul>
+                                        <li>Request ride/delivery history from platforms you use</li>
+                                        <li>Time: approximately 10 minutes, and requires a 24-72 hour processing period</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="phase-block">
+                            <div class="phase-text">
+                                <div class="phase-title">Phase 4: Data upload</div>
+                                <div class="phase-content">
+                                    <ul>
+                                        <li>Organize and upload screenshots</li>
+                                        <li>Upload rideshare/delivery files</li>
+                                        <li>Time: approximately 10 minutes</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="title is-5" style="margin-top: 1.5rem;">Phase 2: Qualifying Screenshots</h3>
+                    <p class="block">
+                        Qualifying screenshots must capture (1) the <strong>estimated time of arrival</strong>, (2) the <strong>service you selected</strong> (e.g., select Priority if you will order Priority), and (3) the <strong>pricing details</strong> of the order. For more information on what screenshots to upload, see the examples below.
+                        <br>
+                        <br>
+                        Some platforms may require <strong>more than one screenshot</strong> to capture all of the required information (see UberEats, DoorDash below). You may also upload screenshots from desktop/web browsers if you prefer.
+                    </p>
+                    
+                    <p class="block" style="margin-top: 1rem;">
+                        <strong>Example Qualifying Screenshots:</strong>
+                    </p>
+                    <style>
+                        .screenshot-example img {
+                            width: 95%;
+                            max-height: 300px;
+                            height: auto;
+                            object-fit: contain;
+                            border-radius: 8px;
+                            border: 1px solid #ddd;
+                        }
+                        .screenshot-example .double-screenshot-container {
+                            border: 2px solid #ddd;
+                            border-radius: 8px;
+                            padding: 0.5rem;
+                            background-color: #f9f9f9;
+                        }
+                        .screenshot-example .double-screenshot img {
+                            max-height: 145px;
+                            border: none;
+                        }
+                    </style>
+                    <!-- First Row -->
+                    <div class="columns" style="margin-top: 1rem;">
+                        <div class="column is-one-quarter screenshot-example">
+                            <figure class="image">
+                                <img src="/resources/images/screenshots/uber_accept_screenshot.jpeg" alt="Uber Screenshot Example">
+                            </figure>
+                            <p class="has-text-centered" style="margin-top: 0.5rem; font-size: 0.9rem;">Uber</p>
+                        </div>
+                        <div class="column is-one-quarter screenshot-example">
+                            <figure class="image">
+                                <img src="/resources/images/screenshots/lyft_accept.jpeg" alt="Lyft Screenshot Example">
+                            </figure>
+                            <p class="has-text-centered" style="margin-top: 0.5rem; font-size: 0.9rem;">Lyft</p>
+                        </div>
+                        <div class="column is-half screenshot-example">
+                            <div class="double-screenshot-container">
+                                <div style="display: flex; flex-direction: row; gap: 0.5rem;">
+                                    <figure class="image" style="flex: 1;">
+                                        <img src="/resources/images/screenshots/ubereats_accept_1.jpeg" alt="UberEats Screenshot Example 1" class="double-screenshot">
+                                    </figure>
+                                    <figure class="image" style="flex: 1;">
+                                        <img src="/resources/images/screenshots/ubereats_accept_2.jpeg" alt="UberEats Screenshot Example 2" class="double-screenshot">
+                                    </figure>
+                                </div>
+                            </div>
+                            <p class="has-text-centered" style="margin-top: 0.5rem; font-size: 0.9rem;">UberEats</p>
+                        </div>
+                    </div>
+                    <!-- Second Row -->
+                    <div class="columns" style="margin-top: 1rem;">
+                        <div class="column is-one-quarter screenshot-example">
+                            <figure class="image">
+                                <img src="/resources/images/screenshots/grubhub_accept_ideal.jpeg" alt="Grubhub Screenshot Example">
+                            </figure>
+                            <p class="has-text-centered" style="margin-top: 0.5rem; font-size: 0.9rem;">Grubhub</p>
+                        </div>
+                        <div class="column is-one-quarter screenshot-example">
+                            <figure class="image">
+                                <img src="/resources/images/screenshots/instacart_accept.jpeg" alt="Instacart Screenshot Example">
+                            </figure>
+                            <p class="has-text-centered" style="margin-top: 0.5rem; font-size: 0.9rem;">Instacart</p>
+                        </div>
+                        <div class="column is-half screenshot-example">
+                            <div class="double-screenshot-container">
+                                <div style="display: flex; flex-direction: row; gap: 0.5rem;">
+                                    <figure class="image" style="flex: 1;">
+                                        <img src="/resources/images/screenshots/doordash_accept_1.jpeg" alt="DoorDash Screenshot Example 1" class="double-screenshot">
+                                    </figure>
+                                    <figure class="image" style="flex: 1;">
+                                        <img src="/resources/images/screenshots/doordash_accept_2.jpeg" alt="DoorDash Screenshot Example 2" class="double-screenshot">
+                                    </figure>
+                                </div>
+                            </div>
+                            <p class="has-text-centered" style="margin-top: 0.5rem; font-size: 0.9rem;">DoorDash</p>
+                        </div>
+                    </div>
+                    <h3 class="title is-5" style="margin-top: 1.5rem;">Remembering to Take Screenshots</h3>
+                    <p class="block">
+                        To help you remember to take screenshots before each rideshare/delivery order, we have created two Shortcuts.
+                        You can download them by clicking the blue text below. <strong>Please open the links on your iPhone.</strong> You can open this webpage on your phone, or send the webpage to yourself via email or text message.
+                    </p>
+                    <ol type="1" style="margin-left: 2rem; margin-top: 0.5rem;">
+                        <li>Click this link: <a href="https://www.icloud.com/shortcuts/9a5bd35fc0bb45489907c997a5c2fd5a" target="_blank">Reminder Notification to Take Screenshot</a> Shortcut</li>
+                        <li>Click this link: <a href="https://www.icloud.com/shortcuts/9a5bd35fc0bb45489907c997a5c2fd5a" target="_blank">Automatically Take & Save Screenshot</a> Shortcut</li>
+                    </ol>
+
+                    <!-- <div class="pdf-container" style="margin-top: 1rem;">
+                        <iframe src="/resources/study_overview.pdf" style="width: 100%; height: 600px; border: 1px solid #ccc;">
+                            <p>Your browser does not support iframes. You can <a href="/resources/study_overview.pdf" target="_blank">download the PDF here</a>.</p>
+                        </iframe>
+                    </div> -->
+
+                    <h3 class="title is-5" style="margin-top: 1.5rem;">Compensation</h3>
+                    <p class="block">
+                        Participants who complete all phases of the study will receive compensation as follows:
+                    </p>
+                    <ol style="margin-left: 2rem; margin-top: 0.5rem;">
+                        <li>$10 for uploading your ride/delivery history and at least 5 screenshots of your ride/delivery orders.</li>
+                        <li>$1 bonus for each additional screenshot you upload (>5 total), up to $10. For example, if you upload 10 screenshots, you will receive $15.</li>
+                    </ol>
+                    
+                    <h3 class="title is-5" style="margin-top: 1.5rem;">Data Privacy</h3>
+                    <p class="block">
+                        Your data will be uploaded to a secure server, with access limited to the research team. You'll be able to review all of your data prior to uploading it to us. 
+                    </p>
+                    
+                </div>
+                
+                <h3 class="title is-4" style="margin-top: 1.5rem;">For participants who have already signed up:</h3>
+                <div class="action-cards">
+                    <div class="action-card">
+                        <div class="card">
+                            <div class="card-content">
+                                <h3 class="title is-5">
+                                    <i class="fas fa-envelope" style="margin-right: 0.5rem;"></i>
+                                    Need Help?
+                                </h3>
+                                <p class="block">
+                                    Have questions or need assistance? Please email the research team at
+                                    <a href="mailto:rideshare-study@cs.princeton.edu">rideshare-study@cs.princeton.edu</a>
+                                    and include the email address you used during consent.
+                                </p>
+                                <p class="help">
+                                    We'll respond to your registered email address.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="action-card">
+                        <div class="card">
+                            <div class="card-content">
+                                <h3 class="title is-5">
+                                    <i class="fas fa-upload" style="margin-right: 0.5rem;"></i>
+                                    Upload Data
+                                </h3>
+                                <p class="block">
+                                    Already signed up and ready to upload your rideshare data and screenshots? Click below to proceed.
+                                </p>
+                                <div style="margin-top: 1rem;">
+                                    <button id="uploadDataButton" class="button is-success is-fullwidth is-large">
+                                        Continue to Data Upload &raquo;
+                                    </button>
+                                </div>
+                                <p class="help" style="margin-top: 0.5rem;">
+                                    You'll need your email address to continue.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="has-text-centered" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #eee;">
+                    <p class="block">
+                        New to the study? <a href="/web/consent.html">Start with the consent form</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="/resources/js/landing_full.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>Princeton University - Screenshot Upload</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="/resources/css/style.css">
+    <link rel="icon" href="/resources/images/favicon.ico" type="image/x-icon">
+    <script src="/resources/js/jszip.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+    
+    <style>
+        /* specific styles for the drop zone */
+        #drop-area {
+            border: 2px dashed #ccc;
+            border-radius: 20px;
+            width: 100%;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        #drop-area.highlight {
+            border-color: #485fc7; /* Bulma link color */
+            background-color: #eff1fa;
+        }
+
+        #gallery {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .file-preview {
+            background: white;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            width: 150px;
+            font-size: 0.8rem;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .file-preview i {
+            font-size: 2rem;
+            color: #485fc7;
+            margin-bottom: 5px;
+        }
+
+        .file-name-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+        }
+
+        .remove-file {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff3860;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            line-height: 20px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <section class="page-content">
+        <div class="hero-body" style="padding-top: 2rem;">
+            <div class="columns is-mobile">
+                <div class="column is-2-tablet is-5-mobile is-offset-2-tablet" style="padding: 0;">
+                    <figure class="image">
+                        <img src="/resources/images/princeton-logo.png" alt="Princeton Logo">
+                    </figure>
+                </div>
+            </div>
+
+            <div class="columns is-centered">
+                <div class="column is-8">
+                    <h1 class="title is-4 has-text-centered">Upload Screenshots</h1>
+                    <p class="block has-text-centered">
+                        Please upload up to <strong>20 screenshots</strong> of your ride/delivery requests. For more information on what screenshots to upload, please see the <a href="https://rideshare-study.cs.princeton.edu/resources/screenshot_guide.pdf" target="_blank">screenshot guide</a>.
+                        <br>Supported formats: PNG, JPG, JPEG.
+                    </p>
+                </div>
+            </div>
+
+            <div class="columns is-centered">
+                <div class="column is-7">
+                    <div class="field">
+                        <label class="label">Prolific ID (PID)</label>
+                        <div class="control">
+                            <input id="prolificIdInput" class="input" type="text" placeholder="Enter your Prolific ID">
+                        </div>
+                    </div>
+
+                    <div id="drop-area">
+                        <form class="my-form">
+                            <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
+                            <p class="title is-5" style="color: #666;">Drag & Drop files here</p>
+                            <p class="subtitle is-6" style="color: #999;">or click to browse</p>
+                            <input type="file" id="fileElem" multiple accept="image/*" class="hidden" onchange="handleFiles(this.files)">
+                        </form>
+                    </div>
+
+                    <div id="gallery"></div>
+
+                    <div id="upload-error" class="notification is-danger hidden" style="margin-top: 20px;">
+                        <button class="delete" onclick="this.parentElement.classList.add('hidden')"></button>
+                        <span id="error-text">An error occurred.</span>
+                    </div>
+
+                    <div id="upload-success" class="notification is-success hidden" style="margin-top: 20px;">
+                        <h4 class="title is-5">Upload Complete!</h4>
+                        <p>Your screenshots have been securely uploaded.</p>
+                        <div style="margin-top: 1rem;">
+                            <a href="https://princetonsurvey.az1.qualtrics.com/jfe/form/SV_6Jdl3otIYj6SLuS" id="returnToSurveyLink" class="button is-light" target="_blank">Return to Survey</a>
+                        </div>
+                    </div>
+
+                    <progress id="upload-progress" class="progress is-link hidden" value="0" max="100" style="margin-top: 20px;">0%</progress>
+
+                    <div class="has-text-centered" style="margin-top: 2rem;">
+                        <button id="submitButton" class="button is-link is-medium" disabled>
+                            Submit Screenshots
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="/resources/js/upload.js"></script>
+</body>
+</html>

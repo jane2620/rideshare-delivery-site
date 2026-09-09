@@ -1,0 +1,135 @@
+.tooltiptext {
+    visibility: hidden;
+    width: 140px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 150%;
+    left: 50%;
+    margin-left: -75px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+
+.text-red {
+    color: #de2900;
+}
+
+#copyExtensionUrlButton:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+
+
+
+
+
+
+
+
+
+
+.input-assist-message {
+    font-size: 0.875rem;
+    line-height: 1.55rem;
+    padding: 0.3875rem 0.3875rem;
+    color: rgba(0, 0, 0, 0.75);
+    background-color: #f3edc7;
+    border: 1px solid #e4d154;
+    position: relative;
+    margin-top: 0.5rem;
+    display: none;
+}
+
+.input-assist-message:before {
+    content: "";
+    position: absolute;
+    left: 11px;
+    top: -16px;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    border: 8px solid transparent;
+    border-bottom-color: #e4d154;
+}
+
+.input-assist-message:after {
+    content: "";
+    position: absolute;
+    left: 11px;
+    top: -15px;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    border: 8px solid transparent;
+    border-bottom-color: #f3edc7;
+}
+
+.input-assist-message.is-active {
+    display: inline-block !important;
+}
+
+.error-message {
+    font-size: 0.875rem;
+    line-height: 1.55rem;
+    padding: 0.3875rem 0.3875rem;
+    color: rgba(0, 0, 0, 0.75);
+    background-color: #f3ded7;
+    border: 1px solid #e4a793;
+    position: relative;
+    margin-top: 0.5rem;
+}
+
+.error-message.is-active,
+.error-message.is-active:before,
+.error-message.is-active:after {
+    display: block !important;
+    width: fit-content;
+}
+
+.hidden {
+    display: none;
+}
+
+#submit-error {
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 0.5rem;
+}
+
+
+
+
+.apple-settings-logo {
+    vertical-align: text-bottom;
+    height: 1em !important;
+    width: auto !important;
+}
+
+.download-link {
+    color: #007bff;
+    font-weight: bold;
+    font-size: 1.2rem;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.download-link:hover {
+    color: #2a2d2f;
+}

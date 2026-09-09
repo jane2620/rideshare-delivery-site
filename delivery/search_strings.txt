@@ -1,0 +1,8 @@
+Doordash:
+from:no-reply@doordash.com "Your DoorDash data archive is ready for download"
+
+Grubhub:
+from:help_me@eat.grubhub.com
+
+Instacart:
+from:noreply@m.onetrust.com "Your Privacy Request Has Been Updated" "Instacart"

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>Princeton University - Rideshare Survey</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/resources/css/style.css">
+    <link rel="icon" href="/resources/images/favicon.ico" type="image/x-icon">
+
+    <style>
+        #qrcode {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        #qrcode img {
+            border: 10px solid white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .step-container {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hidden {
+            display: none !important;
+        }
+        /* Screenshot upload styles */
+        #drop-area {
+            border: 2px dashed #ccc;
+            border-radius: 20px;
+            width: 100%;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        #drop-area.highlight {
+            border-color: #485fc7;
+            background-color: #eff1fa;
+        }
+        #gallery {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        .file-preview {
+            background: white;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            width: 150px;
+            font-size: 0.8rem;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .file-preview i {
+            font-size: 2rem;
+            color: #485fc7;
+            margin-bottom: 5px;
+        }
+        .file-name-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+        }
+        .remove-file {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff3860;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            line-height: 20px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .collapsible-content {
+            margin-top: 1rem;
+        }
+        .pdf-container {
+            margin-top: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .pdf-container object {
+            width: 100%;
+            height: 600px;
+        }
+    </style>
+</head>
+
+<body data-study-type="estimates">
+    <section class="page-content">
+        <div class="hero-body" style="padding-top: 2rem;">
+            <div class="columns is-mobile">
+                <div class="column is-2-tablet is-5-mobile is-offset-2-tablet" style="padding: 0;">
+                    <figure class="image">
+                        <img src="/resources/images/princeton-logo.png" alt="Princeton Logo">
+                    </figure>
+                </div>
+            </div>
+
+            <!-- Return Participant Section -->
+            <div id="returnParticipantSection" class="columns is-centered">
+                <div class="column is-6 is-offset-3">
+                    <div class="box">
+                        <h3 class="title is-5">Returning Participant?</h3>
+                        <p class="block">Enter your email address to continue:</p>
+                        <div class="field has-addons">
+                            <div class="control is-expanded">
+                                <input id="returnEmailInput" class="input" type="email" placeholder="Enter your email address">
+                            </div>
+                            <div class="control">
+                                <button id="continueWithEmailButton" class="button is-link">Continue</button>
+                            </div>
+                        </div>
+                        <p class="help">New to the study? <a href="/web/consent.html">Start with the consent form</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload Sections (hidden until email is provided) -->
+            <div id="uploadSections" style="display: none;">
+                <div class="columns is-centered" style="margin-bottom: 3rem;">
+                    <div class="column is-8">
+                        <h1 class="title is-3">Phase 4: Upload Your Ride/Delivery History and Screenshots</h1>
+                        <p>
+                            As described in Phase 1 of the study, we will be collecting your ride/delivery history and screenshots. You will be able to view a preview of the data before submission. If you have any questions, please contact us at <a href="mailto:rideshare-study@princeton.edu">rideshare-study@cs.princeton.edu</a>.
+                            <br>
+                            <br>
+                            Please follow the steps below to upload your data.
+                        </p>
+                    </div>
+                </div>
+
+                <div id="step-zip" class="step-container">
+                <div class="columns is-centered">
+                    <div class="column is-8">
+                        <h2 class="title is-4">Part 1: Request Ride/Delivery History Data (if not yet completed in Phase 3)</h2>
+                        <div class="notification is-info is-light">
+                            <p><strong>If you have not downloaded your data yet:</strong></p>
+                            <p>Note: You only need to request data for the apps you have used.</p>
+                            <ol type="1" style="margin-left: 2rem;">
+                                <li><a href="https://myprivacy.uber.com/exploreyourdata/download" target="_blank">Request Uber/UberEats Data</a></li>
+                                <li><a href="https://account.lyft.com/privacy/data/download" target="_blank">Request Lyft Data</a></li>
+                                <li><a href="https://www.grubhub.com/help/privacy/manage-your-data" target="_blank">Request GrubHub Data</a></li></li>
+                                <li><a href="https://www.doordash.com/consumer/privacy/manage_account" target="_blank">Request DoorDash Data</a></li>
+                                <li><a href="https://www.instacart.com/user_privacy/form" target="_blank">Request Instacart Data</a></li>
+                            </ol>
+                            <p style="font-size: 0.85rem; margin-top: 0.5rem;">(Note: Data requests typically take 24-72 hours to process)</p>
+                            
+                            <hr style="background-color: #aebfde; height: 1px; margin: 1rem 0;">
+                            
+                            <!-- Collapsible section for upload instructions PDF -->
+                            <div class="collapsible-section">
+                                <button class="button is-text" id="toggleInstructions" onclick="toggleInstructions()" style="padding: 0; text-decoration: underline;">
+                                    Click here to show the instructions (PDF) about how to request your data if you have not already.
+                                </button>
+                                <div id="instructionsContent" class="collapsible-content" style="display: none;">
+                                    <div class="pdf-container">
+                                        <object data="https://rideshare-study.cs.princeton.edu/resources/request_data_guide.pdf" type="application/pdf" width="100%" height="600px">
+                                            <p>
+                                                Your browser cannot display the PDF. 
+                                                <a href="https://rideshare-study.cs.princeton.edu/resources/request_data_guide.pdf" target="_blank" rel="noopener">Click here to open the guide in a new tab.</a>
+                                            </p>
+                                        </object>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="formSection">
+                    <div class="columns is-centered">
+                        <div class="column is-8">
+                            <h2 class="title is-4">Part 2: Upload Ride History Data</h2>
+                            <div class="field">
+                                <label class="label">Email Address</label>
+                                <div class="control has-icons-left">
+                                    <input id="emailInput" class="input" type="email" placeholder="Enter your email address">
+                                    <span class="icon is-small is-left">
+                                        <i class="fas fa-envelope"></i>
+                                    </span>
+                                </div>
+                                <p class="help">Enter the email address you used when completing the consent form.</p>
+                            </div>
+                            
+                            <hr>
+                            
+                            <p class="block">Please check the boxes next to each app you have ride/delivery history data for:</p>
+                            <div class="field"><label class="checkbox"><input type="checkbox" id="hasUberCheckbox"> I have Uber/UberEats data to upload. (e.g., Uber Data.zip)</label></div>
+                            <div class="field"><label class="checkbox"><input type="checkbox" id="hasLyftCheckbox"> I have Lyft data to upload. (e.g., lyft_data.zip)</label></div>
+                            <div class="field"><label class="checkbox"><input type="checkbox" id="hasGrubhubCheckbox"> I have GrubHub data to upload. (e.g., grubhub_data.zip)</label></div>
+                            <div class="field"><label class="checkbox"><input type="checkbox" id="hasDoorDashCheckbox"> I have DoorDash data to upload. (e.g., doordash_data.zip)</label></div>
+                            <div class="field"><label class="checkbox"><input type="checkbox" id="hasInstacartCheckbox"> I have Instacart data to upload. (e.g., orders_orders.csv and orders_order_deliveries.csv)</label></div>
+                            
+                            <br>
+                            
+                            <div id="uberUploadSection" style="display: none;">
+                                <p><strong>Uber .zip to upload:</strong></p>
+                                <div id="uberFileInputDiv" class="file is-primary has-name">
+                                    <label class="file-label">
+                                        <input id="uberFileInput" class="file-input" type="file" accept=".zip">
+                                        <span class="file-cta"><span class="file-icon"><i class="fas fa-upload"></i></span><span class="file-label">Choose Uber File</span></span>
+                                        <span id="uberFileName" class="file-name">No file selected</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div id="lyftUploadSection" style="display: none; margin-top: 1rem;">
+                                <p><strong>Lyft .zip to upload:</strong></p>
+                                <div id="lyftFileInputDiv" class="file is-primary has-name">
+                                    <label class="file-label">
+                                        <input id="lyftFileInput" class="file-input" type="file" accept=".zip">
+                                        <span class="file-cta"><span class="file-icon"><i class="fas fa-upload"></i></span><span class="file-label">Choose Lyft File</span></span>
+                                        <span id="lyftFileName" class="file-name">No file selected</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="grubhubUploadSection" style="display: none; margin-top: 1rem;">
+                                <p><strong>GrubHub .zip to upload:</strong></p>
+                                <div id="grubhubFileInputDiv" class="file is-primary has-name">
+                                    <label class="file-label">
+                                        <input id="grubhubFileInput" class="file-input" type="file" accept=".zip">
+                                        <span class="file-cta"><span class="file-icon"><i class="fas fa-upload"></i></span><span class="file-label">Choose GrubHub File</span></span>
+                                        <span id="grubhubFileName" class="file-name">No file selected</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="doorDashUploadSection" style="display: none; margin-top: 1rem;">
+                                <p><strong>DoorDash .zip to upload:</strong></p>
+                                <div id="doorDashFileInputDiv" class="file is-primary has-name">
+                                    <label class="file-label">
+                                        <input id="doorDashFileInput" class="file-input" type="file" accept=".zip">
+                                        <span class="file-cta"><span class="file-icon"><i class="fas fa-upload"></i></span><span class="file-label">Choose DoorDash File</span></span>
+                                        <span id="doorDashFileName" class="file-name">No file selected</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="instacartUploadSection" style="display: none; margin-top: 1rem;">
+                                <p><strong>Instacart CSV files to upload:</strong></p>
+                                <div id="instacartOrdersFileInputDiv" class="file is-primary has-name" style="margin-bottom: 1rem;">
+                                    <label class="file-label">
+                                        <input id="instacartOrdersFileInput" class="file-input" type="file" accept=".csv">
+                                        <span class="file-cta"><span class="file-icon"><i class="fas fa-upload"></i></span><span class="file-label">Choose orders_orders.csv</span></span>
+                                        <span id="instacartOrdersFileName" class="file-name">No file selected</span>
+                                    </label>
+                                </div>
+                                <div id="instacartDeliveriesFileInputDiv" class="file is-primary has-name">
+                                    <label class="file-label">
+                                        <input id="instacartDeliveriesFileInput" class="file-input" type="file" accept=".csv">
+                                        <span class="file-cta"><span class="file-icon"><i class="fas fa-upload"></i></span><span class="file-label">Choose orders_order_deliveries.csv</span></span>
+                                        <span id="instacartDeliveriesFileName" class="file-name">No file selected</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="file-error-message" class="hidden error-message" style="color: red; margin-top: 10px;">
+                                File selection unsuccessful, please try again.
+                            </div>
+                            <div id="file-error-message-special" class="hidden error-message" style="color: orange; margin-top: 10px;"></div>
+                            
+                            <p>We will display a preview of the minimized data you have uploaded below. Please check that the data is correct before submitting.</p>
+                            <br>
+                            <p><b>Data Preview:</b></p>
+                            <textarea id="dataVisual" class="textarea" rows="6" readonly placeholder="Data will appear here..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="columns is-centered">
+                        <div class="column is-8 has-text-centered">
+                            <div id="submit-error" class="hidden error-message" style="color: red; margin-bottom: 10px;">
+                                Upload failed. Please check your connection.
+                            </div>
+                            <button id="submitZipButton" class="button is-link is-medium" style="display: none; margin-top: 1rem;">
+                                Submit Ride Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="step-screenshots" class="step-container" style="margin-top: 4rem;">
+                <div class="columns is-centered">
+                    <div class="column is-8">
+                        <h2 class="title is-4">Part 3: Upload Screenshots from Phase 2</h2>
+                        <h5 class="title is-6">Note: You must submit your ride/delivery history files before submitting your screenshots.</h5>
+                    </div>
+                </div>
+
+                <div class="columns is-centered">
+                    <div class="column is-8">
+                        <div class="field">
+                            <label class="label">Email Address</label>
+                            <div class="control">
+                                <input id="screenshotEmailInput" class="input" type="email" placeholder="Enter your email address">
+                            </div>
+                            <p class="help">Use the same email address as above.</p>
+                        </div>
+
+                        <p class="block" style="margin-top: 1rem;">
+                            Please upload up to <strong>20 screenshots</strong> of your ride/delivery requests. For more information on what screenshots to upload, please see the <a href="https://rideshare-study.cs.princeton.edu/resources/screenshot_guide.pdf" target="_blank">screenshot guide</a>.
+                            <br>
+                            <br>Supported formats: PNG, JPG, JPEG.
+                        </p>
+
+                        <div id="drop-area">
+                            <form class="my-form">
+                                <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
+                                <p class="title is-5" style="color: #666;">Drag & Drop files here</p>
+                                <p class="subtitle is-6" style="color: #999;">or click to browse</p>
+                                <input type="file" id="fileElem" multiple accept="image/*" class="hidden">
+                            </form>
+                        </div>
+
+                        <div id="gallery"></div>
+
+                        <div id="upload-error" class="notification is-danger hidden" style="margin-top: 20px;">
+                            <button class="delete" onclick="this.parentElement.classList.add('hidden')"></button>
+                            <span id="error-text">An error occurred.</span>
+                        </div>
+
+                        <div id="upload-success" class="notification is-success hidden" style="margin-top: 20px;">
+                            <h4 class="title is-5">Upload Complete!</h4>
+                            <p>Your screenshots have been securely uploaded.</p>
+                        </div>
+
+                        <progress id="upload-progress" class="progress is-link hidden" value="0" max="100" style="margin-top: 20px;">0%</progress>
+
+                        <div class="has-text-centered" style="margin-top: 2rem;">
+                            <button id="submitScreenshotsButton" class="button is-link is-medium" disabled>
+                                Submit Screenshots
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+            <!-- End of Upload Sections -->
+
+        </div>
+    </section>
+
+    <script>
+        function toggleInstructions() {
+            const content = document.getElementById('instructionsContent');
+            const button = document.getElementById('toggleInstructions');
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                button.innerHTML = 'Hide step-by-step data request guide';
+            } else {
+                content.style.display = 'none';
+                button.innerHTML = 'Click here to show the instructions (PDF) about how to request your data if you have not already.';
+            }
+        }
+    </script>
+
+    <script src="/resources/js/jszip.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <script src="/resources/js/hub.js"></script>
+</body>
+</html>

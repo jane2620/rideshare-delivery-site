@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>Princeton University - Consent Form</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/resources/css/style.css">
+    <link rel="icon" href="/resources/images/favicon.ico" type="image/x-icon">
+
+    <style>
+        .consent-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .consent-text {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <section class="page-content">
+        <div class="hero-body" style="padding-top: 2rem;">
+            <div class="columns is-mobile">
+                <div class="column is-2-tablet is-5-mobile is-offset-2-tablet" style="padding: 0;">
+                    <figure class="image">
+                        <img src="/resources/images/princeton-logo.png" alt="Princeton Logo">
+                    </figure>
+                </div>
+            </div>
+
+            <div class="consent-container">
+                <h1 class="title is-3 has-text-centered">Research Study Consent Form - Princeton University IRB #18415</h1>
+                <p>Thank you for your interest in participating in our research study! Please read the official consent form below in full before agreeing to participate.</p>                
+                <div class="consent-text">
+                    <object data="/resources/rideshare_irb_consent_crowdsource.pdf" type="application/pdf" width="100%" height="600px">
+                        <p>
+                            Your browser cannot display the PDF. 
+                            <a href="/resources/rideshare_irb_consent_crowdsource.pdf" target="_blank" rel="noopener">Click here to open the consent form in a new tab.</a>
+                        </p>
+                    </object>
+                </div>
+
+                <form id="consentForm">
+                    <div class="field">
+                        <label class="label">Email Address *</label>
+                        <p>This email will be used to contact you if needed regarding the study. If you consent, you will receive a random participant ID to use in the study.</p>
+                        <br>
+                        <div class="control has-icons-left">
+                            <input id="emailInput" class="input" type="email" placeholder="your.email@example.com" required>
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-envelope"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="checkbox">
+                            <input type="checkbox" id="consentCheckbox" required>
+                            I have read and understood the consent form above, and I agree to participate in this research study. *
+                        </label>
+                    </div>
+
+                    <div id="consent-error" class="notification is-danger hidden" style="margin-top: 1rem;">
+                        <button class="delete" onclick="this.parentElement.classList.add('hidden')"></button>
+                        <span id="consent-error-text">An error occurred. Please try again.</span>
+                    </div>
+
+                    <div class="has-text-centered" style="margin-top: 2rem;">
+                        <button type="submit" id="consentSubmitButton" class="button is-link is-large">
+                            I Consent and Continue
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <script src="/resources/js/consent.js"></script>
+</body>
+</html>

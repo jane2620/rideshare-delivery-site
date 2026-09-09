@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Princeton University - Delivery Email Receipts Upload</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/resources/css/style.css">
+    <link rel="icon" href="/resources/images/favicon.ico" type="image/x-icon">
+</head>
+<body data-study-type="delivery_emails">
+    <section class="page-content">
+        <div class="hero-body" style="padding-top: 2rem;">
+            <div class="columns is-mobile">
+                <div class="column is-2-tablet is-5-mobile is-offset-2-tablet" style="padding: 0;">
+                    <figure class="image">
+                        <img src="/resources/images/princeton-logo.png" alt="Princeton Logo">
+                    </figure>
+                </div>
+            </div>
+
+            <div class="columns is-centered">
+                <div class="column is-8">
+                    <div class="box">
+                        <h1 class="title is-3">Upload Delivery Email Receipts</h1>
+                        <p class="block">
+                            This page is only for your <strong>email receipts</strong>. You will upload <strong>anonymized JSON</strong>
+                            generated locally from a .zip of .eml emails.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="columns is-centered" style="margin-top: 1rem;">
+                <div class="column is-8">
+                    <div class="box">
+                        <div class="field">
+                            <label class="label">Prolific ID</label>
+                            <div class="control has-icons-left">
+                                <input id="emailInput" class="input" type="text" placeholder="Enter your Prolific ID">
+                                <span class="icon is-small is-left">
+                                    <i class="fas fa-envelope"></i>
+                                </span>
+                            </div>
+                            <p class="help">Use the same Prolific ID you used in the study.</p>
+                        </div>
+
+                        <hr>
+
+                        <h2 class="title is-4">Email receipts</h2>
+                        <p class="block">
+                            If you already forwarded your delivery receipt emails to
+                            <strong>receipts@delivery-study.com</strong>, you do not need to upload a .zip here, and you can return to the survey.
+                        </p>
+                        <!-- <div class="field">
+                            <label class="checkbox">
+                                <input type="checkbox" id="emailReceiptsForwardedCheckbox">
+                                I already forwarded my receipt emails to receipts@delivery-study.com
+                            </label>
+                        </div> -->
+
+                        <div id="emailReceiptsOptionalUploadSection">
+                            <!-- <p class="block is-size-7 has-text-grey" style="margin-top: 0.5rem;">
+                                Otherwise, export your receipt emails as a single <strong>.zip</strong> of <strong>.eml</strong> files. We process it
+                                <em>in your browser</em> into anonymized JSON and upload <strong>only that JSON</strong> to our servers (not the raw zip).
+                            </p> -->
+
+                            <div class="field" style="margin-top: 1rem;">
+                                <label class="label is-size-6">Email receipts (.zip of .eml files)</label>
+                                <div id="emailReceiptsZipFileInputDiv" class="file is-primary has-name">
+                                    <label class="file-label">
+                                        <input id="emailReceiptsZipInput" class="file-input" type="file" accept=".zip">
+                                        <span class="file-cta"><span class="file-icon"><i class="fas fa-upload"></i></span><span class="file-label">Choose .zip</span></span>
+                                        <span id="emailReceiptsZipFileName" class="file-name">No file selected</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="emailZip-error" class="notification is-danger is-light hidden" style="margin-top: 0.75rem;"></div>
+                            <div id="emailZip-success" class="notification is-success is-light hidden" style="margin-top: 0.75rem;"></div>
+
+                            <hr>
+
+                            <h3 class="title is-5">Anonymized email receipts preview (JSON)</h3>
+                            <h5 style="margin-bottom: 0.5rem;">
+                                You may manually remove any personal information that was not automatically redacted. Please do not change any other fields.
+                            </h5>
+                            <!-- <p class="help block">
+                                After you choose a .zip, this preview is built locally (same rules as <code>eml_deanon.js</code>). Click
+                                <strong>Upload anonymized receipts (JSON)</strong> to send this JSON to secure storage—only the JSON is uploaded, not your .zip.
+                            </p> -->
+                            <div id="emailReceiptsPreviewError" class="notification is-warning is-light hidden" style="margin-top: 0.5rem;"></div>
+                            <textarea id="emailReceiptsJsonPreview" class="textarea" rows="6" placeholder="Choose a .zip above to see the anonymized JSON preview… (you can edit this JSON before uploading)"></textarea>
+
+                            <div class="field" style="margin-top: 1rem;">
+                                <button id="submitEmailReceiptsZipButton" type="button" class="button is-primary is-outlined">
+                                    Upload anonymized receipts (JSON)
+                                </button>
+                                <button id="resetEmailReceiptsPreviewButton" type="button" class="button is-light" style="margin-left: 0.5rem;">
+                                    Reset edits
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="/resources/js/jszip.js"></script>
+    <script src="/delivery/receipt_stripping.js"></script>
+    <script src="/delivery/eml_deanon_browser.js"></script>
+    <script src="/delivery/hub.js"></script>
+</body>
+</html>
+

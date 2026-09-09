@@ -1,0 +1,132 @@
+<style>
+    .phase-block {
+        background-color: #ffffff;
+        border-radius: 12px;
+        padding: 1rem 1.1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border-left: 4px solid #3273dc;
+        display: flex;
+        align-items: stretch;
+        justify-content: space-between;
+        gap: 0.9rem;
+    }
+    .phase-block:last-child {
+        margin-bottom: 0;
+    }
+    .phase-text {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        flex: 1;
+    }
+    .phase-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #363636;
+        margin-bottom: 0.15rem;
+    }
+    .phase-content {
+        margin-left: 0.2rem;
+        flex: 1;
+    }
+    .phase-content ul {
+        list-style: none;
+        padding-left: 0;
+    }
+    .phase-content li {
+        padding: 0.25rem 0;
+        padding-left: 1.25rem;
+        position: relative;
+        font-size: 1.05rem;
+    }
+    .phase-content li:before {
+        content: "•";
+        position: absolute;
+        left: 0;
+        color: #3273dc;
+        font-weight: bold;
+        font-size: 1.1rem;
+        top: 0.25rem;
+    }
+    .phase-content ol {
+        padding-left: 1.25rem;
+        margin-top: 0.35rem;
+    }
+    .phase-content ol li {
+        padding-left: 0;
+    }
+    .phase-content ol li:before {
+        display: none;
+    }
+    .phase-image {
+        width: 125px;
+        height: auto;
+        flex-shrink: 0;
+        border-radius: 10px;
+        object-fit: cover;
+        display: block;
+        background: #f6f6f6;
+        border: 1px solid #e6e6e6;
+    }
+</style>
+
+<div style="margin: 2rem 0;">
+    <div class="phase-block">
+        <div class="phase-text">
+            <div class="phase-title">Phase 1: Onboarding</div>
+            <div class="phase-content">
+                <ul>
+                    <li>Learn about the study</li>
+                    <li>Complete onboarding survey</li>
+                    <li>Time: approximately 10 minutes</li>
+                </ul>
+            </div>
+        </div>
+        <!-- <img class="phase-image" src="/resources/images/princeton-logo.png" alt="Phase illustration"> -->
+    </div>
+
+    <div class="phase-block">
+        <div class="phase-text">
+            <div class="phase-title">
+                Phase 2: Screenshot collection (2 weeks)
+            </div>
+            <div class="phase-content">
+                <ol>
+                    <li>Take screenshots of ride/delivery requests</li>
+                    <li>Order ride/delivery</li>
+                    <li>Receive ride/delivery</li>
+                </ol>
+            </div>
+        </div>
+        <img class="phase-image" src="/resources/images/screenshots/uber_accept_screenshot.jpeg" alt="Phase illustration">
+    </div>
+
+    <div class="phase-block">
+        <div class="phase-text">
+            <div class="phase-title">Phase 3: Request data</div>
+            <div class="phase-content">
+                <ul>
+                    <li>Request ride/delivery history from platforms you use</li>
+                    <li>Time: approximately 10 minutes, and requires a 24-72 hour processing period</li>
+                </ul>
+            </div>
+        </div>
+        <!-- <img class="phase-image" src="/resources/images/princeton-logo.png" alt="Phase illustration"> -->
+    </div>
+
+    <div class="phase-block">
+        <div class="phase-text">
+            <div class="phase-title">Phase 4: Data upload</div>
+            <div class="phase-content">
+                <ul>
+                    <li>Organize and upload screenshots</li>
+                    <li>Upload rideshare/delivery files</li>
+                    <li>Time: approximately 10 minutes</li>
+                </ul>
+            </div>
+        </div>
+        <!-- <img class="phase-image" src="/resources/images/princeton-logo.png" alt="Phase illustration"> -->
+    </div>
+</div>
+
