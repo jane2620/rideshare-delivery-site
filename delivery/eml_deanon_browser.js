@@ -101,11 +101,13 @@
     /**
      * Parse one decoded RFC822 message string into a receipt object.
      * Handles both quoted-printable and plain text bodies.
-     * If the body contains HTML it is converted to plain text.
+     * If the body contains HTML, a flattened plain-text `body` is produced,
+     * but the original HTML is preserved as `html` for downstream extraction
+     * that needs markup (e.g. Grubhub's JSON-LD delivery window).
      *
      * @param {string} raw    - Full RFC822 message text (headers + body)
      * @param {number} index  - Zero-based index (receipt_index will be index + 1)
-     * @returns {{ receipt_index, subject, date, sender, body }}
+     * @returns {{ receipt_index, subject, date, sender, body, html?: string }}
      */
     function parseMessage(raw, index) {
         const normalized = raw.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
@@ -148,13 +150,19 @@
             }
         }
 
-        // Convert HTML to plain text if needed
+        // Convert HTML to plain text if needed, but keep the raw HTML around too —
+        // downstream extraction (e.g. Grubhub's JSON-LD delivery window) needs it.
+        let html;
         if (body.includes("<") && (contentType.includes("html") || /<html|<body|<table|<td/i.test(body))) {
+            html = body;
             body = htmlToPlainText(body);
         } else if (body.includes("<")) {
             // Ambiguous — strip tags anyway if they appear substantial
             const tagCount = (body.match(/<[^>]+>/g) || []).length;
-            if (tagCount > 5) body = htmlToPlainText(body);
+            if (tagCount > 5) {
+                html = body;
+                body = htmlToPlainText(body);
+            }
         }
 
         body = body.replace(/\n{3,}/g, "\n\n").trim();
@@ -165,6 +173,7 @@
             date,
             sender,
             body: body || "could not extract body",
+            ...(html ? { html } : {}),
         };
     }
 
@@ -338,7 +347,7 @@
         global.emlDeanon = api;
         // Legacy namespace alias
         global.emlDeanonBrowser = api;
-        // delivery/hub.js and older pages call this on window directly
+        // delivery/receipts_hub.js and older pages call this on window directly
         global.processEmailReceiptsZipForPreview = processEmailReceiptsZip;
     }
 

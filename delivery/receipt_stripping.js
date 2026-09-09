@@ -1,24 +1,14 @@
-
 (function (global) {
     "use strict";
 
     // ── Platform detection ────────────────────────────────────────────────────
 
-    /**
-     * Identify the sending platform.
-     *
-     * @param {string} subject
-     * @param {string} body
-     * @param {string} [sender]  - "From" header value, e.g. "DoorDash <no-reply@doordash.com>"
-     * Returns: "doordash" | "grubhub" | "instacart" | "unknown"
-     */
-    function detectPlatform(subject, body, sender) {
+    function detectPlatform(sender, subject, body) {
         const from = (sender || "").toLowerCase();
         if (from.includes("doordash.com"))   return "doordash";
         if (from.includes("grubhub.com"))    return "grubhub";
         if (from.includes("instacart.com"))  return "instacart";
 
-        // Fallback: keyword scan of subject + body
         const hay = `${subject || ""} ${body || ""}`.toLowerCase();
         if (hay.includes("doordash"))  return "doordash";
         if (hay.includes("grubhub"))   return "grubhub";
@@ -26,150 +16,151 @@
         return "unknown";
     }
 
+    // ── Email type detection ──────────────────────────────────────────────────
+
+    function detectEmailType(subject) {
+        if (/cancel(?:ed|led|lation)/i.test(subject)) return "cancellation";
+        if (/receipt/i.test(subject)) return "receipt";
+        if (/confirm(?:ed|ation)/i.test(subject)) return "confirmation";
+        return "unknown";
+    }
+
     // ── Store extraction ──────────────────────────────────────────────────────
 
-    function extractStore(subject, body, platform) {
+    function extractStore(subject, body) {
+        subject = subject || "";
+        body = body || "";
         let m;
 
-        // DoorDash subject: "Order Confirmation from <Store>"
-        m = (subject || "").match(/Order Confirmation from (.+)/i);
+        const orderConfirmRe = /Order Confirmation(?:\s+for\s+[^,\n]+?)?\s+from\s+(.+)/i;
+        m = subject.match(orderConfirmRe) || body.match(orderConfirmRe);
         if (m) return m[1].trim();
 
-        // Instacart subject: "Your <Store> order is confirmed …"
-        m = (subject || "").match(/Your (.+?) order is confirmed/i);
+        m = subject.match(/Your (.+?) order is confirmed/i);
         if (m) return m[1].trim();
 
-        // Grubhub body: "delivery order from <Store> is being prepared"
-        m = (body || "").match(/(?:delivery\s+)?order\s+from\s+(.+?)\s+is being prepared/i);
+        m = body.match(/(?:delivery\s+)?order\s+from\s+(.+?)\s+is being prepared/i);
         if (m) return m[1].trim();
 
-        // Grubhub subject: "Your <Store> order" (guard against "Your order")
-        m = (subject || "").match(/Your\s+(.+?)\s+order\b/i);
+        m = subject.match(/Your\s+(.+?)\s+order\b/i);
         if (m && m[1].toLowerCase() !== "order") return m[1].trim();
 
-        // Generic body: "order from <Store>" — capitalized merchant name
-        m = (body || "").match(/order from\s+([A-Z][^.,\n]{2,40})/);
+        m = body.match(/order from\s+([A-Z][^.,\n]{2,40})/);
         if (m) return m[1].trim();
 
         return null;
     }
 
-    // ── ETA extraction ────────────────────────────────────────────────────────
+    // ── Instacart-specific parsing ────────────────────────────────────────────
 
-    /**
-     * Normalize bare hour strings like "5pm" → "5:00 PM".
-     * Leaves already-formatted times (e.g. "5:45pm") untouched except uppercasing AM/PM.
-     */
+    function normalizeWrittenDate(value) {
+        return value
+            .replace(/(\d)(?:st|nd|rd|th)\b/gi, "$1")
+            .replace(/\s+/g, " ")
+            .trim();
+    }
+
+    function extractInstacartDetails(subject, body) {
+        subject = subject || "";
+        body = body || "";
+
+        if (/cancel(?:ed|led|lation)/i.test(subject)) {
+            return { emailType: "cancellation" };
+        }
+
+        const confirmationSubject = subject.match(
+            /Your\s+(.+?)\s+order\s+is\s+confirmed\s+for\s+(.+?)\s*$/i
+        );
+        if (confirmationSubject) {
+            const scheduled = body.match(
+                /It['’]s\s+scheduled\s+for\s+delivery\s+(Today|Tomorrow|(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2}(?:st|nd|rd|th)?(?:,?\s+\d{4})?)\s+from\s+(\d{1,2}(?::\d{2})?\s*[ap]m)\s*[-–]\s*(\d{1,2}(?::\d{2})?\s*[ap]m)/i
+            );
+
+            return {
+                emailType: "confirmation",
+                store: confirmationSubject[1].trim(),
+                deliveryDate: normalizeWrittenDate(scheduled?.[1] || confirmationSubject[2]),
+                etaWindow: scheduled
+                    ? `${normalizeTimeStr(scheduled[2])} - ${normalizeTimeStr(scheduled[3])}`
+                    : null,
+                orderDate: null,
+                deliveryTimeLocal: null,
+            };
+        }
+
+        if (/Your\s+Instacart\s+order\s+receipt/i.test(subject)) {
+            const receipt = body.match(
+                /Your\s+order\s+from\s+(.+?)\s+was\s+placed\s+on\s+((?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2}(?:st|nd|rd|th)?,?\s+\d{4})\s+and\s+delivered\s+on\s+((?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2}(?:st|nd|rd|th)?,?\s+\d{4})\s+at\s+(\d{1,2}(?::\d{2})?\s*[ap]m)/i
+            );
+
+            return {
+                emailType: "receipt",
+                store: receipt?.[1]?.trim() || null,
+                orderDate: receipt ? normalizeWrittenDate(receipt[2]) : null,
+                deliveryDate: receipt ? normalizeWrittenDate(receipt[3]) : null,
+                deliveryTimeLocal: receipt ? normalizeTimeStr(receipt[4]) : null,
+                etaWindow: null,
+            };
+        }
+
+        return { emailType: detectEmailType(subject) };
+    }
+
+    // ── ETA / time helpers ────────────────────────────────────────────────────
+
     function normalizeTimeStr(t) {
         return t.trim()
-            // "5pm" → "5:00 PM"
-            .replace(/^(\d{1,2})(am|pm)$/i, (_, h, ap) => `${h}:00 ${ap.toUpperCase()}`)
-            // "5:45pm" → "5:45 PM"
+            .replace(/^(\d{1,2})(am|pm)$/i,       (_, h, ap)  => `${h}:00 ${ap.toUpperCase()}`)
             .replace(/^(\d{1,2}:\d{2})(am|pm)$/i, (_, hm, ap) => `${hm} ${ap.toUpperCase()}`);
     }
 
-    /**
-     * Extract the ETA or scheduled delivery/pickup window from the email body.
-     *
-     * Handled patterns (in priority order):
-     *   1. DoorDash: "estimated delivery time for your order is 10:27 AM - 10:37 AM"
-     *   2. Grubhub:  "food should arrive between 5:45pm – 6:00pm"
-     *   3. Generic "between X and Y" / "between X – Y"
-     *   4. Instacart scheduled: "from 5pm - 8pm"
-     *   5. Generic bare range:  "10:27 AM – 10:37 AM"
-     *
-     * Returns a normalized string like "5:00 PM - 8:00 PM", or null.
-     */
     function extractETA(body) {
         if (!body) return null;
         let m;
 
-        // 1. "estimated * time * is <HH:MM AM - HH:MM AM>"
-        m = body.match(
-            /estimated\s+\w+\s+time[^i]*?is\s+([\d:]+\s*[AP]M\s*[-–]\s*[\d:]+\s*[AP]M)/i
-        );
+        m = body.match(/estimated\s+\w+\s+time[^i]*?is\s+([\d:]+\s*[AP]M\s*[-–]\s*[\d:]+\s*[AP]M)/i);
         if (m) return m[1].replace(/\s+/g, " ").trim();
 
-        // 2. "arrive between Xpm – Ypm"  (Grubhub; accepts colon or no colon)
-        m = body.match(
-            /arrive\s+between\s+([\d]{1,2}(?::[\d]{2})?[ap]m)\s*[-–]\s*([\d]{1,2}(?::[\d]{2})?[ap]m)/i
-        );
+        m = body.match(/arrive\s+between\s+([\d]{1,2}(?::[\d]{2})?[ap]m)\s*[-–]\s*([\d]{1,2}(?::[\d]{2})?[ap]m)/i);
         if (m) return `${normalizeTimeStr(m[1])} - ${normalizeTimeStr(m[2])}`;
 
-        // 3. "between X and Y" / "between X – Y"
-        m = body.match(
-            /between\s+([\d]{1,2}(?::[\d]{2})?[ap]m)\s+(?:and|[-–])\s+([\d]{1,2}(?::[\d]{2})?[ap]m)/i
-        );
+        m = body.match(/between\s+([\d]{1,2}(?::[\d]{2})?[ap]m)\s+(?:and|[-–])\s+([\d]{1,2}(?::[\d]{2})?[ap]m)/i);
         if (m) return `${normalizeTimeStr(m[1])} - ${normalizeTimeStr(m[2])}`;
 
-        // 4. Instacart: "from 5pm - 8pm" or "from 5pm – 8pm"
-        m = body.match(
-            /from\s+([\d]{1,2}(?::[\d]{2})?[ap]m)\s*[-–]\s*([\d]{1,2}(?::[\d]{2})?[ap]m)/i
-        );
+        m = body.match(/from\s+([\d]{1,2}(?::[\d]{2})?[ap]m)\s*[-–]\s*([\d]{1,2}(?::[\d]{2})?[ap]m)/i);
         if (m) return `${normalizeTimeStr(m[1])} - ${normalizeTimeStr(m[2])}`;
 
-        // 5. Generic bare range with colons: "10:27 AM – 10:37 AM"
-        m = body.match(/([\d]{1,2}:[\d]{2}\s*[AP]M\s*[-–]\s*[\d]{1,2}:[\d]{2}\s*[AP]M)/i);
-        if (m) return m[1].replace(/\s+/g, " ").trim();
+        m = body.match(/([\d]{1,2}:[\d]{2}(?:\s*[AP]M)?)\s*[-–]\s*([\d]{1,2}:[\d]{2}(?:\s*[AP]M)?)/i);
+        if (m) return `${m[1].replace(/\s+/g, " ").trim()} - ${m[2].replace(/\s+/g, " ").trim()}`;
 
         return null;
     }
 
-    // ── Scheduled date (Instacart and similar) ────────────────────────────────
-
-    /**
-     * For platforms like Instacart where the delivery is scheduled in advance,
-     * extract the scheduled delivery date (distinct from the email sent date).
-     *
-     * Examples:
-     *   body:    "Oct 22 from 5pm - 8pm"  → "Oct 22"
-     *   subject: "confirmed for October 22" → "October 22"
-     *
-     * Returns a short date string or null.
-     */
-    function extractScheduledDate(body, subject) {
-        // Body: "Oct 22" or "October 22"
+    function extractDeliveryDate(body, subject) {
         let m = (body || "").match(
             /\b(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2}\b/i
         );
         if (m) return m[0];
 
-        // Subject: "confirmed for October 22, 2024" etc.
-        m = (subject || "").match(
-            /(?:confirmed for|scheduled for|arriving)\s+([A-Za-z]+ \d{1,2}(?:,?\s*\d{4})?)/i
-        );
+        m = (subject || "").match(/(?:confirmed for|scheduled for|arriving)\s+([A-Za-z]+ \d{1,2}(?:,?\s*\d{4})?)/i);
         if (m) return m[1].trim();
 
         return null;
     }
 
-    // ── Order type ────────────────────────────────────────────────────────────
+    // ── Order type flags ──────────────────────────────────────────────────────
 
-    /**
-     * Infer whether this is a delivery or pickup order.
-     * Returns: "pickup" | "delivery" | "unknown"
-     */
     function extractOrderType(body, subject) {
         const hay = `${subject || ""} ${body || ""}`;
-        if (/pick.?up|go straight to the restaurant|pick it up|ready for pickup/i.test(hay))
-            return "pickup";
-        if (/deliver|on its way|driver|shopper|track your order/i.test(hay))
-            return "delivery";
-        return "unknown";
+        return {
+            is_pickup:    /pick.?up|go straight to the restaurant|pick it up|ready for pickup/i.test(hay),
+            is_delivery:  /deliver|on its way|driver|shopper|track your order/i.test(hay),
+            is_scheduled: /scheduled|advance order|future order|scheduled delivery/i.test(hay),
+        };
     }
 
     // ── Total extraction ──────────────────────────────────────────────────────
 
-    /**
-     * Extract the final charged total (not subtotals, tax, or tips).
-     *
-     * Priority:
-     *   1. "Total charge $X"    — Grubhub breakdown label (most specific)
-     *   2. "Total: $X"          — DoorDash / Grubhub header
-     *   3. "Estimated Total $X" — DoorDash receipt block
-     *
-     * Returns "$X.XX" or null.
-     */
     function extractTotal(body) {
         if (!body) return null;
         let m;
@@ -177,7 +168,7 @@
         m = body.match(/Total\s+charge\s*\$?([\d,]+\.\d{2})/i);
         if (m) return `$${m[1]}`;
 
-        m = body.match(/\bTotal:\s*\$?([\d,]+\.\d{2})/i);
+        m = body.match(/(?:^|\n)\s*Total:?\s*\$?([\d,]+\.\d{2})/im);
         if (m) return `$${m[1]}`;
 
         m = body.match(/Estimated Total\s+\$?([\d,]+\.\d{2})/i);
@@ -186,15 +177,142 @@
         return null;
     }
 
-    // ── Date normalization ────────────────────────────────────────────────────
+    // ── Grubhub JSON-LD delivery window ───────────────────────────────────────
+    // Needs raw HTML. The browser pipeline (eml_deanon_browser.js) flattens the
+    // body to plain text before handing it here, so this resolves to null in
+    // that path and eta_window falls back to the regex-based extractETA below.
 
-    function normalizeDate(dateStr) {
-        if (!dateStr || dateStr === "unknown") return null;
-        try {
-            return new Date(dateStr).toISOString();
-        } catch {
-            return dateStr;
+    function extractGrubhubDelivery(html) {
+        if (!html) return null;
+
+        const scripts = html.matchAll(
+            /<script\b[^>]*type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi
+        );
+
+        for (const script of scripts) {
+            try {
+                const json = JSON.parse(script[1].trim());
+                const delivery = findJsonLdType(json, "ParcelDelivery");
+                if (!delivery) continue;
+
+                const from = delivery.expectedArrivalFrom;
+                const until = delivery.expectedArrivalUntil;
+                if (typeof from !== "string" || typeof until !== "string") continue;
+
+                const fromOffset = extractTimeOffset(from);
+                const untilOffset = extractTimeOffset(until);
+
+                return {
+                    etaWindow: `${from} - ${until}`,
+                    timezoneOffset: fromOffset || untilOffset,
+                };
+            } catch (e) {
+                // malformed JSON-LD — fall through to string matching
+            }
         }
+
+        return null;
+    }
+
+    function findJsonLdType(value, type) {
+        if (Array.isArray(value)) {
+            for (const item of value) {
+                const match = findJsonLdType(item, type);
+                if (match) return match;
+            }
+            return null;
+        }
+
+        if (!value || typeof value !== "object") return null;
+
+        const types = Array.isArray(value["@type"]) ? value["@type"] : [value["@type"]];
+        if (types.includes(type)) return value;
+
+        for (const child of Object.values(value)) {
+            const match = findJsonLdType(child, type);
+            if (match) return match;
+        }
+        return null;
+    }
+
+    function extractTimeOffset(value) {
+        const match = value.match(/(Z|[+-]\d{2}:\d{2})$/i);
+        if (!match) return null;
+        return match[1].toUpperCase() === "Z" ? "+00:00" : match[1];
+    }
+
+    // ── Sent-time normalization ───────────────────────────────────────────────
+
+    function offsetStringToMinutes(offset) {
+        if (offset === "Z") return 0;
+
+        const match = offset.match(/^([+-])(\d{2}):?(\d{2})$/);
+        if (!match) return null;
+
+        const minutes = Number(match[2]) * 60 + Number(match[3]);
+        return match[1] === "-" ? -minutes : minutes;
+    }
+
+    /**
+     * @param {string} rawDate            - Date header string (already extracted upstream)
+     * @param {string} [recipientOffset]  - fixed-offset string from grubhub JSON-LD, if any
+     */
+    function extractSentTimes(rawDate, recipientOffset) {
+        const date = new Date(rawDate || "");
+
+        if (Number.isNaN(date.getTime())) {
+            return {
+                sent_at_utc: null,
+                sent_at_local: null,
+                timezone: null,
+                utc_offset: null,
+            };
+        }
+
+        const offsetMinutes = recipientOffset
+            ? offsetStringToMinutes(recipientOffset)
+            : null;
+        if (offsetMinutes === null) {
+            return {
+                sent_at_utc: date.toISOString(),
+                sent_at_local: null,
+                timezone: null,
+                utc_offset: null,
+            };
+        }
+
+        const sign = offsetMinutes < 0 ? "-" : "+";
+        const absoluteOffset = Math.abs(offsetMinutes);
+        const offset = `${sign}${String(Math.floor(absoluteOffset / 60)).padStart(2, "0")}:${String(absoluteOffset % 60).padStart(2, "0")}`;
+        const local = new Date(date.getTime() + offsetMinutes * 60_000);
+        const localDateTime = [
+            local.getUTCFullYear(),
+            String(local.getUTCMonth() + 1).padStart(2, "0"),
+            String(local.getUTCDate()).padStart(2, "0"),
+        ].join("-") + "T" + [
+            String(local.getUTCHours()).padStart(2, "0"),
+            String(local.getUTCMinutes()).padStart(2, "0"),
+            String(local.getUTCSeconds()).padStart(2, "0"),
+        ].join(":") + offset;
+
+        return {
+            sent_at_utc: date.toISOString(),
+            sent_at_local: localDateTime,
+            timezone: `UTC${offset}`,
+            utc_offset: offset,
+        };
+    }
+
+    // ── Sender parsing ────────────────────────────────────────────────────────
+
+    /**
+     * Extract the email address from a raw "From" header string,
+     * e.g. 'DoorDash <no-reply@doordash.com>' → 'no-reply@doordash.com'.
+     */
+    function senderAddress(sender) {
+        if (!sender) return "";
+        const m = sender.match(/<([^>]+)>/);
+        return (m ? m[1] : sender).trim().toLowerCase();
     }
 
     // ── Public API ────────────────────────────────────────────────────────────
@@ -203,51 +321,82 @@
      * Summarize a single parsed receipt object into a PII-free record.
      *
      * Input (from eml_deanon / processEmailReceiptsZipForPreview):
-     *   { receipt_index, subject, date, body, sender? }
+     *   { receipt_index, subject, date, sender, body }
      *
-     *   `sender` = raw From header, e.g. "DoorDash <no-reply@doordash.com>".
-     *   Used as primary platform signal; body keywords are the fallback.
+     *   `sender` is the raw From header, e.g. "DoorDash <no-reply@doordash.com>".
+     *   Used as the primary platform signal; body keywords are the fallback.
      *   The sender value itself is NOT included in output.
      *
      * Output:
      *   {
      *     receipt_index,
-     *     sent_at,          // ISO timestamp — when the email was sent
-     *     platform,         // "doordash" | "grubhub" | "instacart" | "unknown"
-     *     store,            // merchant name, e.g. "Costco", "Chipotle"
-     *     order_type,       // "delivery" | "pickup" | "unknown"
-     *     scheduled_date,   // "Oct 22" for advance orders (Instacart), else null
-     *     eta_window,       // "5:00 PM - 8:00 PM" or null
-     *     total,            // "$18.71" or null
+     *     sent_at_utc, sent_at_local, timezone, utc_offset,
+     *     platform, email_type, store,
+     *     is_pickup, is_delivery, is_scheduled,
+     *     order_date, delivery_date, delivery_time_local, eta_window, total,
      *   }
      */
     function summarizeReceipt(receipt) {
-        const body     = receipt.body   || "";
-        const subject  = receipt.subject || "";
-        const sender   = receipt.sender  || receipt.from || "";
-        const platform = detectPlatform(subject, body, sender);
+        const subject = receipt.subject || "";
+        const sender  = senderAddress(receipt.sender);
+        const body    = receipt.body || "";
+        const platform = detectPlatform(sender, subject, body);
+
+        const grubhubDelivery = platform === "grubhub"
+            ? extractGrubhubDelivery(receipt.html)
+            : null;
+        const instacart = platform === "instacart"
+            ? extractInstacartDetails(subject, body)
+            : null;
+        const sentTimes = extractSentTimes(receipt.date, grubhubDelivery?.timezoneOffset);
+        const emailType = instacart?.emailType || detectEmailType(subject);
+
+        if (emailType === "cancellation") {
+            return {
+                receipt_index: receipt.receipt_index,
+                ...sentTimes,
+                platform,
+                email_type: "cancellation",
+                store: null,
+                is_pickup: false,
+                is_delivery: false,
+                is_scheduled: false,
+                order_date: null,
+                delivery_date: null,
+                delivery_time_local: null,
+                eta_window: null,
+                total: null,
+            };
+        }
+
+        const orderFlags = extractOrderType(body, subject);
+        if (instacart?.emailType === "confirmation") {
+            orderFlags.is_delivery = true;
+            orderFlags.is_scheduled = true;
+        }
 
         return {
-            receipt_index:  receipt.receipt_index,
-            sent_at:        normalizeDate(receipt.date),
+            receipt_index: receipt.receipt_index,
+            ...sentTimes,
             platform,
-            store:          extractStore(subject, body, platform),
-            order_type:     extractOrderType(body, subject),
-            scheduled_date: extractScheduledDate(body, subject),
-            eta_window:     extractETA(body),
-            total:          extractTotal(body),
+            email_type: emailType,
+            store: instacart?.store || extractStore(subject, body),
+            ...orderFlags,
+            order_date: instacart?.orderDate || null,
+            delivery_date: instacart?.deliveryDate || extractDeliveryDate(body, subject),
+            delivery_time_local: instacart?.deliveryTimeLocal || null,
+            eta_window: grubhubDelivery?.etaWindow || instacart?.etaWindow || extractETA(body),
+            total: extractTotal(body),
         };
     }
 
     /**
      * Summarize a full receipts payload (output of the eml_deanon pipeline).
-     * Shape matches Cloudflare email_worker.js forward payload (PII-free receipts only).
+     * Shape matches the Cloudflare email worker's forward payload (PII-free receipts only).
      *
      * Input:  { prolific_id, processed_at, receipts: [...raw] }
      * @param {object} [options]
-     * @param {string} [options.original_subject]  Forward subject line; defaults to prolific_id (zip upload has no outer email).
-     *
-     * Output: { prolific_id, original_subject, processed_at, receipt_count, receipts: [...] }
+     * @param {string} [options.original_subject]  Forward subject line; defaults to prolific_id.
      */
     function summarizeAll(payload, options) {
         options = options || {};
@@ -272,9 +421,10 @@
 
     const api = {
         detectPlatform,
+        detectEmailType,
         extractStore,
         extractETA,
-        extractScheduledDate,
+        extractDeliveryDate,
         extractOrderType,
         extractTotal,
         summarizeReceipt,

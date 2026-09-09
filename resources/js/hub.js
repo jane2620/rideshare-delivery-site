@@ -807,7 +807,7 @@ async function validateAndProcessData() {
                 previewHintEl.classList.remove("hidden");
             }
         }
-        // Preview shows as soon as files parse; submit when email + optional delivery receipt gate (www/delivery/hub.js)
+        // Preview shows as soon as files parse; submit when email + optional delivery receipt gate (www/delivery/receipts_hub.js)
         const receiptGateOk =
             typeof window.hubEmailReceiptsGate !== "function" || window.hubEmailReceiptsGate();
         const canSubmit = hasPid && receiptGateOk;
@@ -1080,7 +1080,7 @@ document.getElementById('submitZipButton').onclick = async (event) => {
     try {
         const pid = getProlificId();
 
-        // Delivery upload: optional gate from www/delivery/hub.js (forwarding or receipts .zip uploaded)
+        // Delivery upload: optional gate from www/delivery/receipts_hub.js (forwarding or receipts .zip uploaded)
         if (typeof window.hubEmailReceiptsGate === "function" && !window.hubEmailReceiptsGate()) {
             const submitError = document.getElementById("submit-error");
             if (submitError) {

@@ -1,6 +1,7 @@
 /**
  * Delivery study only — email receipts: local .zip → anonymized JSON (eml_deanon_browser.js),
  * upload JSON to S3 (not the raw zip). Gates main JSON submit. Loaded after /resources/js/hub.js.
+ * (Formerly delivery/hub.js.)
  */
 (function () {
     "use strict";
@@ -79,7 +80,7 @@
             if (previewTa) previewTa.value = "";
             return;
         }
-        // If the user has edited the preview, don't overwrite it automatically.
+
         if (previewTa && previewDirty) {
             return;
         }
