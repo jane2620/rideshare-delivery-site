@@ -33,65 +33,6 @@
         .hidden {
             display: none !important;
         }
-        /* Screenshot upload styles */
-        #drop-area {
-            border: 2px dashed #ccc;
-            border-radius: 20px;
-            width: 100%;
-            padding: 40px;
-            text-align: center;
-            transition: all 0.3s ease;
-            background-color: #f9f9f9;
-            cursor: pointer;
-            margin-bottom: 20px;
-        }
-        #drop-area.highlight {
-            border-color: #485fc7;
-            background-color: #eff1fa;
-        }
-        #gallery {
-            margin-top: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-        }
-        .file-preview {
-            background: white;
-            padding: 10px;
-            border: 1px solid #eee;
-            border-radius: 8px;
-            width: 150px;
-            font-size: 0.8rem;
-            text-align: center;
-            position: relative;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .file-preview i {
-            font-size: 2rem;
-            color: #485fc7;
-            margin-bottom: 5px;
-        }
-        .file-name-text {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: block;
-        }
-        .remove-file {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: #ff3860;
-            color: white;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            text-align: center;
-            line-height: 20px;
-            cursor: pointer;
-            font-size: 12px;
-        }
         .collapsible-content {
             margin-top: 1rem;
         }
@@ -142,9 +83,9 @@
             <div id="uploadSections" style="display: none;">
                 <div class="columns is-centered" style="margin-bottom: 3rem;">
                     <div class="column is-8">
-                        <h1 class="title is-3">Phase 4: Upload Your Ride/Delivery History and Screenshots</h1>
+                        <h1 class="title is-3">Phase 4: Upload Your Ride/Delivery History</h1>
                         <p>
-                            As described in Phase 1 of the study, we will be collecting your ride/delivery history and screenshots. You will be able to view a preview of the data before submission. If you have any questions, please contact us at <a href="mailto:rideshare-study@princeton.edu">rideshare-study@cs.princeton.edu</a>.
+                            As described in Phase 1 of the study, we will be collecting your ride/delivery history. You will be able to view a preview of the data before submission. If you have any questions, please contact us at <a href="mailto:rideshare-study@princeton.edu">rideshare-study@cs.princeton.edu</a>.
                             <br>
                             <br>
                             Please follow the steps below to upload your data.
@@ -322,61 +263,6 @@
                 </div>
             </div>
 
-            <div id="step-screenshots" class="step-container" style="margin-top: 4rem;">
-                <div class="columns is-centered">
-                    <div class="column is-8">
-                        <h2 class="title is-4">Part 3: Upload Screenshots from Phase 2</h2>
-                        <h5 class="title is-6">Note: You must submit your ride/delivery history files before submitting your screenshots.</h5>
-                    </div>
-                </div>
-
-                <div class="columns is-centered">
-                    <div class="column is-8">
-                        <div class="field">
-                            <label class="label">Email Address</label>
-                            <div class="control">
-                                <input id="screenshotEmailInput" class="input" type="email" placeholder="Enter your email address">
-                            </div>
-                            <p class="help">Use the same email address as above.</p>
-                        </div>
-
-                        <p class="block" style="margin-top: 1rem;">
-                            Please upload up to <strong>20 screenshots</strong> of your ride/delivery requests. For more information on what screenshots to upload, please see the <a href="https://rideshare-study.cs.princeton.edu/resources/screenshot_guide.pdf" target="_blank">screenshot guide</a>.
-                            <br>
-                            <br>Supported formats: PNG, JPG, JPEG.
-                        </p>
-
-                        <div id="drop-area">
-                            <form class="my-form">
-                                <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
-                                <p class="title is-5" style="color: #666;">Drag & Drop files here</p>
-                                <p class="subtitle is-6" style="color: #999;">or click to browse</p>
-                                <input type="file" id="fileElem" multiple accept="image/*" class="hidden">
-                            </form>
-                        </div>
-
-                        <div id="gallery"></div>
-
-                        <div id="upload-error" class="notification is-danger hidden" style="margin-top: 20px;">
-                            <button class="delete" onclick="this.parentElement.classList.add('hidden')"></button>
-                            <span id="error-text">An error occurred.</span>
-                        </div>
-
-                        <div id="upload-success" class="notification is-success hidden" style="margin-top: 20px;">
-                            <h4 class="title is-5">Upload Complete!</h4>
-                            <p>Your screenshots have been securely uploaded.</p>
-                        </div>
-
-                        <progress id="upload-progress" class="progress is-link hidden" value="0" max="100" style="margin-top: 20px;">0%</progress>
-
-                        <div class="has-text-centered" style="margin-top: 2rem;">
-                            <button id="submitScreenshotsButton" class="button is-link is-medium" disabled>
-                                Submit Screenshots
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
             </div>
             <!-- End of Upload Sections -->
 
@@ -400,7 +286,6 @@
     <script src="../resources/js/config.js"></script>
     <script src="../resources/js/jszip.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
     <script src="../resources/js/hub.js"></script>
