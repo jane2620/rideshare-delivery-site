@@ -250,12 +250,31 @@
                             </div>
 
                             <div id="doorDashUploadSection" style="display: none; margin-top: 1rem;">
-                                <p><strong>DoorDash .zip to upload:</strong></p>
+                                <p><strong>DoorDash .zip or folder to upload:</strong></p>
+                                <div class="field" id="doorDashUploadModeToggle">
+                                    <div class="control">
+                                        <label class="radio">
+                                            <input type="radio" name="doorDashUploadMode" id="doorDashUploadModeZip" value="zip" checked>
+                                            .zip file
+                                        </label>
+                                        <label class="radio" style="margin-left: 1rem;">
+                                            <input type="radio" name="doorDashUploadMode" id="doorDashUploadModeFolder" value="folder">
+                                            Folder
+                                        </label>
+                                    </div>
+                                </div>
                                 <div id="doorDashFileInputDiv" class="file is-primary has-name">
                                     <label class="file-label">
                                         <input id="doorDashFileInput" class="file-input" type="file" accept=".zip">
                                         <span class="file-cta"><span class="file-icon"><i class="fas fa-upload"></i></span><span class="file-label">Choose DoorDash File</span></span>
                                         <span id="doorDashFileName" class="file-name">No file selected</span>
+                                    </label>
+                                </div>
+                                <div id="doorDashFolderInputDiv" class="file is-primary has-name hidden">
+                                    <label class="file-label">
+                                        <input id="doorDashFolderInput" class="file-input" type="file" webkitdirectory>
+                                        <span class="file-cta"><span class="file-icon"><i class="fas fa-folder-open"></i></span><span class="file-label">Choose DoorDash folder</span></span>
+                                        <span id="doorDashFolderName" class="file-name">No folder selected</span>
                                     </label>
                                 </div>
                             </div>

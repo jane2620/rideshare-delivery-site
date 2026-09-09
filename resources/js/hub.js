@@ -8,8 +8,6 @@ let lyftData = null;
 let doordashData = null;
 let grubhubData = null;
 let instacartData = { orders: [], deliveries: [] };
-let rideDataUploaded = false;
-let screenshotsUploaded = false;
 
 function getEmail() {
     const input = document.getElementById('emailInput');
@@ -224,8 +222,7 @@ function processUberData(zipFile) {
             const uberData = {
                 user_profile: null,
                 user_orders: [],
-                trips_data: [],
-                rider_app_analytics: []
+                trips_data: []
             };
             
             // Profile
@@ -376,26 +373,11 @@ function processUberData(zipFile) {
                 }
             }
 
-            // Rider app analytics - include only the event and session timestamps and event type.
-            for (const fileName of Object.keys(zipFile.files)) {
-                const baseName = fileName.split('/').pop();
-                if (/^rider_app_analytics.*\.csv$/i.test(baseName)) {
-                    const fileData = await zipFile.file(fileName).async("string");
-                    const rows = parseCSV(fileData);
-                    uberData.rider_app_analytics.push(...rows.map(row => ({
-                        "Event Time (UTC)": getColumnValue(row, "Event Time (UTC)"),
-                        "Session Start Time (UTC)": getColumnValue(row, "Session Start Time (UTC)"),
-                        "Analytics Event Type": getColumnValue(row, "Analytics Event Type")
-                    })));
-                }
-            }
-            
             console.log('=== processUberData END ===');
             console.log('Final uberData summary:', {
                 user_profile: uberData.user_profile,
                 user_orders_count: uberData.user_orders.length,
-                trips_data_count: uberData.trips_data.length,
-                rider_app_analytics_count: uberData.rider_app_analytics.length
+                trips_data_count: uberData.trips_data.length
             });
             
             resolve(uberData);
@@ -660,11 +642,6 @@ function processInstacartOrdersCSV(csvText) {
     try {
         const rows = parseCSV(csvText);
         return rows
-            .filter(row => {
-                // Only keep completed orders (Completed At is present)
-                const completedAt = getColumnValue(row, 'Completed At');
-                return completedAt && completedAt.trim() !== '';
-            })
             .map(row => ({
                 Completed_At: getColumnValue(row, 'Completed At'),
                 Currency: getColumnValue(row, 'Currency'),
@@ -737,15 +714,10 @@ function updateFileUploadVisibility() {
         } else {
             doordashSection.style.display = 'none';
             doordashData = null;
-            const input = document.getElementById('doorDashFileInput');
-            const nameSpan = document.getElementById('doorDashFileName');
-            const inputDiv = document.getElementById('doorDashFileInputDiv');
-            if (input) input.value = '';
-            if (nameSpan) nameSpan.innerHTML = 'No file selected';
-            if (inputDiv) inputDiv.classList.remove('is-danger');
+            resetDoorDashUploadInputs();
         }
     }
-    
+
     if (grubhubSection) {
         if (hasGrubhub()) {
             grubhubSection.style.display = 'block';
@@ -789,11 +761,11 @@ async function validateAndProcessData() {
     try {
         // Reset Errors
         document.getElementById("file-error-message").classList.remove("is-active");
-        document.getElementById("file-error-message-special").classList.remove("is-active");
         const uberDiv = document.getElementById("uberFileInputDiv");
         const uberFolderDiv = document.getElementById("uberFolderInputDiv");
         const lyftDiv = document.getElementById("lyftFileInputDiv");
         const doordashDiv = document.getElementById("doorDashFileInputDiv");
+        const doordashFolderDiv = document.getElementById("doorDashFolderInputDiv");
         const grubhubDiv = document.getElementById("grubhubFileInputDiv");
         const instacartOrdersDiv = document.getElementById("instacartOrdersFileInputDiv");
         const instacartDeliveriesDiv = document.getElementById("instacartDeliveriesFileInputDiv");
@@ -801,6 +773,7 @@ async function validateAndProcessData() {
         if (uberFolderDiv) uberFolderDiv.classList.remove("is-danger");
         if (lyftDiv) lyftDiv.classList.remove("is-danger");
         if (doordashDiv) doordashDiv.classList.remove("is-danger");
+        if (doordashFolderDiv) doordashFolderDiv.classList.remove("is-danger");
         if (grubhubDiv) grubhubDiv.classList.remove("is-danger");
         if (instacartOrdersDiv) instacartOrdersDiv.classList.remove("is-danger");
         if (instacartDeliveriesDiv) instacartDeliveriesDiv.classList.remove("is-danger");
@@ -833,25 +806,6 @@ async function validateAndProcessData() {
             const hint = document.getElementById("previewEmailHint");
             if (hint) hint.classList.add("hidden");
             return; 
-        }
-        
-        // min data warning (< 5 rides/orders/trips)
-        const passengerRidesCount = lyftData ? lyftData.passenger_rides.length : 0;
-        const userOrdersCount = uberData ? uberData.user_orders.length : 0;
-        const tripsDataCount = uberData ? uberData.trips_data.length : 0;
-        const doordashOrdersCount = doordashData ? (doordashData.consumer_order_details || []).length : 0;
-        const grubhubOrdersCount = grubhubData ? (grubhubData.orders || []).length : 0;
-        const instacartOrdersCount = instacartData ? (instacartData.orders || []).length : 0;
-        const instacartDeliveriesCount = instacartData ? (instacartData.deliveries || []).length : 0;
-        const totalCount = passengerRidesCount + userOrdersCount + tripsDataCount + 
-            doordashOrdersCount + grubhubOrdersCount + instacartOrdersCount + instacartDeliveriesCount;
-        
-        if (totalCount < 5) {
-            const msg = document.getElementById("file-error-message-special");
-            msg.innerText = "Warning: We detected fewer than 5 combined rides/orders/trips. Please confirm there are at least 5 in the preview.";
-            msg.classList.add("is-active");
-        } else {
-            document.getElementById("file-error-message-special").classList.remove("is-active");
         }
         
         // prep output
@@ -888,33 +842,6 @@ async function validateAndProcessData() {
         console.error(error);
         rideshareDataEntered = false;
         document.getElementById("file-error-message").classList.add("is-active");
-    }
-}
-
-// Sync email between both sections
-function syncProlificIds() {
-    const zipEmailInput = document.getElementById('emailInput');
-    const screenshotEmailInput = document.getElementById('screenshotEmailInput');
-    
-    // Backward compatibility - also check for old IDs
-    const zipPidInput = document.getElementById('prolificIdInput');
-    const screenshotPidInput = document.getElementById('screenshotProlificIdInput');
-    
-    const zipInput = zipEmailInput || zipPidInput;
-    const screenshotInput = screenshotEmailInput || screenshotPidInput;
-    
-    if (zipInput && screenshotInput) {
-        // Sync from zip section to screenshot section
-        zipInput.addEventListener('input', () => {
-            screenshotInput.value = zipInput.value;
-            updateScreenshotSubmitButtonState();
-        });
-        
-        // Sync from screenshot section to zip section
-        screenshotInput.addEventListener('input', () => {
-            zipInput.value = screenshotInput.value;
-            validateAndProcessData();
-        });
     }
 }
 
@@ -1025,6 +952,94 @@ function initUberUploadModeToggle() {
     setUberUploadMode(checkedMode ? checkedMode.value : 'zip');
 }
 
+// DoorDash: accepts either a .zip file or a folder (same underlying files either way).
+function resetDoorDashUploadInputs() {
+    const zipInput = document.getElementById('doorDashFileInput');
+    const zipName = document.getElementById('doorDashFileName');
+    const zipDiv = document.getElementById('doorDashFileInputDiv');
+    const folderInput = document.getElementById('doorDashFolderInput');
+    const folderName = document.getElementById('doorDashFolderName');
+    const folderDiv = document.getElementById('doorDashFolderInputDiv');
+    if (zipInput) zipInput.value = '';
+    if (zipName) zipName.innerHTML = 'No file selected';
+    if (zipDiv) zipDiv.classList.remove('is-danger');
+    if (folderInput) folderInput.value = '';
+    if (folderName) folderName.innerHTML = 'No folder selected';
+    if (folderDiv) folderDiv.classList.remove('is-danger');
+}
+
+function isDoorDashFolderUpload(files) {
+    if (!files || files.length === 0) return false;
+    const first = files[0];
+    return files.length > 1 || Boolean(first.webkitRelativePath);
+}
+
+async function loadDoorDashUpload(files) {
+    if (!files || files.length === 0) throw new Error('No files selected');
+    const first = files[0];
+    if (!isDoorDashFolderUpload(files) && first.name.toLowerCase().endsWith('.zip')) {
+        return JSZip.loadAsync(first);
+    }
+    if (!isDoorDashFolderUpload(files)) {
+        throw new Error('Expected a .zip file or a folder');
+    }
+    const zip = new JSZip();
+    for (const file of files) {
+        zip.file(file.webkitRelativePath || file.name, file);
+    }
+    return zip;
+}
+
+function getDoorDashUploadDisplayName(files) {
+    if (!files || files.length === 0) return '';
+    const first = files[0];
+    if (!isDoorDashFolderUpload(files)) return first.name;
+    const folderPath = first.webkitRelativePath || '';
+    const folderName = folderPath.includes('/') ? folderPath.split('/')[0] : 'Selected folder';
+    return `${folderName} (${files.length} files)`;
+}
+
+async function handleDoorDashUpload(files, nameElementId, inputDivId) {
+    const nameEl = document.getElementById(nameElementId);
+    if (nameEl) nameEl.innerHTML = getDoorDashUploadDisplayName(files);
+    const fileError = document.getElementById("file-error-message");
+    const inputDiv = document.getElementById(inputDivId);
+    if (fileError) fileError.classList.remove("is-active");
+    if (inputDiv) inputDiv.classList.remove("is-danger");
+    try {
+        const zipFile = await loadDoorDashUpload(files);
+        doordashData = await processDoorDashData(zipFile);
+        await validateAndProcessData();
+    } catch (error) {
+        doordashData = null;
+        if (fileError) fileError.classList.add("is-active");
+        if (inputDiv) inputDiv.classList.add("is-danger");
+    }
+}
+
+function setDoorDashUploadMode(mode) {
+    const zipDiv = document.getElementById('doorDashFileInputDiv');
+    const folderDiv = document.getElementById('doorDashFolderInputDiv');
+    if (!zipDiv || !folderDiv) return;
+    const isZip = mode === 'zip';
+    zipDiv.classList.toggle('hidden', !isZip);
+    folderDiv.classList.toggle('hidden', isZip);
+    doordashData = null;
+    resetDoorDashUploadInputs();
+    validateAndProcessData();
+}
+
+function initDoorDashUploadModeToggle() {
+    const doorDashUploadModeToggle = document.getElementById('doorDashUploadModeToggle');
+    if (!doorDashUploadModeToggle) return;
+    doorDashUploadModeToggle.addEventListener('change', (event) => {
+        if (event.target.name !== 'doorDashUploadMode') return;
+        setDoorDashUploadMode(event.target.value);
+    });
+    const checkedMode = doorDashUploadModeToggle.querySelector('input[name="doorDashUploadMode"]:checked');
+    setDoorDashUploadMode(checkedMode ? checkedMode.value : 'zip');
+}
+
 // Uber Input
 const uberFileInput = document.getElementById('uberFileInput');
 if (uberFileInput) {
@@ -1067,18 +1082,18 @@ if (lyftFileInput) {
 const doorDashFileInput = document.getElementById('doorDashFileInput');
 if (doorDashFileInput) {
     doorDashFileInput.addEventListener('change', async event => {
-        const file = event.target.files[0];
-        if (!file) return;
-        document.getElementById("doorDashFileName").innerHTML = file.name;
-        try {
-            const zipFile = await JSZip.loadAsync(file);
-            doordashData = await processDoorDashData(zipFile);
-            await validateAndProcessData();
-        } catch (error) {
-            doordashData = null;
-            document.getElementById("file-error-message").classList.add("is-active");
-            document.getElementById("doorDashFileInputDiv").classList.add("is-danger");
-        }
+        const files = event.target.files;
+        if (!files || files.length === 0) return;
+        await handleDoorDashUpload(files, 'doorDashFileName', 'doorDashFileInputDiv');
+    });
+}
+
+const doorDashFolderInput = document.getElementById('doorDashFolderInput');
+if (doorDashFolderInput) {
+    doorDashFolderInput.addEventListener('change', async event => {
+        const files = event.target.files;
+        if (!files || files.length === 0) return;
+        await handleDoorDashUpload(files, 'doorDashFolderName', 'doorDashFolderInputDiv');
     });
 }
 
@@ -1245,6 +1260,7 @@ document.getElementById('submitZipButton').onclick = async (event) => {
 // Initialize screenshot upload on page load
 window.addEventListener('DOMContentLoaded', () => {
     initUberUploadModeToggle();
+    initDoorDashUploadModeToggle();
 
     // Check if email is in URL (from consent form or return participant)
     const urlParams = new URLSearchParams(window.location.search);
