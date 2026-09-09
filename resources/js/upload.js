@@ -247,7 +247,7 @@ submitBtn.onclick = async () => {
     progressBar.removeAttribute('value');
     document.getElementById('upload-error').classList.add('hidden');
 
-    const LAMBDA_URL = "https://sywq97zasl.execute-api.us-east-2.amazonaws.com/upload";
+    const LAMBDA_URL = window.APP_CONFIG.LAMBDA_URL;
 
     try {
         // Build ZIP with metadata.json

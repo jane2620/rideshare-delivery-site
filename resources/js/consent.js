@@ -1,6 +1,6 @@
 // consent.js
 
-const LAMBDA_URL = "https://sywq97zasl.execute-api.us-east-2.amazonaws.com/upload";
+const LAMBDA_URL = window.APP_CONFIG.LAMBDA_URL;
 
 function generateRandomId() {
     const baseId = Math.floor(1000000 + Math.random() * 9999999);

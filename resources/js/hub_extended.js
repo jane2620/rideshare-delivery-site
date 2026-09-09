@@ -1,4 +1,4 @@
-const LAMBDA_URL = "https://sywq97zasl.execute-api.us-east-2.amazonaws.com/upload";
+const LAMBDA_URL = window.APP_CONFIG.LAMBDA_URL;
 
 let rideshareDataEntered = false;
 let outputData = {};

@@ -90,7 +90,7 @@ const treatmentCondition = parseInt((new URLSearchParams(window.location.search)
         const prolificId = (new URLSearchParams(window.location.search)).get("PROLIFIC_PID");
 
         if ((treatmentCondition <= 6 && !getBrowserIsChromeOrEdgeDesktop()) || (treatmentCondition >= 7 && !getBrowserIsSafariMobileVersion(treatmentCondition))) {
-            const url = "https://n97rmes9xl.execute-api.us-east-2.amazonaws.com/deployed";
+            const url = window.APP_CONFIG.REDIRECT_URL;
             await fetch(url, {
                 method: 'POST',
                 headers: {

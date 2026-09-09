@@ -5,7 +5,7 @@
 (function () {
     "use strict";
 
-    const LAMBDA_URL = "https://sywq97zasl.execute-api.us-east-2.amazonaws.com/upload";
+    const LAMBDA_URL = window.APP_CONFIG.LAMBDA_URL;
 
     let emailReceiptsZipFile = null;
     /** True after anonymized receipts JSON was successfully uploaded to S3 */
