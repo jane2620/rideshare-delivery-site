@@ -148,6 +148,26 @@ function fuzzLatLngPair(latStr, lngStr, radiusM = FUZZ_RADIUS_M) {
     return { lat: f.lat.toFixed(6), lng: f.lon.toFixed(6) };
 }
 
+
+function parseUSZipAndState(address) {
+    const result = { zip: null, state: null };
+    if (!address) return result;
+    const str = String(address);
+
+    const zipStateMatch = str.match(/\b([A-Z]{2})\s+(\d{5})(?:-\d{4})?\b/);
+    if (zipStateMatch) {
+        result.state = zipStateMatch[1];
+        result.zip = zipStateMatch[2];
+        return result;
+    }
+
+    const stateOnlyMatch = str.match(/,\s*([A-Z]{2})\s*(?:,|$)/);
+    if (stateOnlyMatch) {
+        result.state = stateOnlyMatch[1];
+    }
+    return result;
+}
+
 // parse timestamp in format "2024-03-14 06:51:38 UTC"
 function parseTimestamp(timestampStr) {
     if (!timestampStr) return null;
@@ -492,15 +512,20 @@ function processDoorDashData(zipFile) {
                 if (fileName.includes('consumer_order_details') && fileName.endsWith('.csv')) {
                     const fileData = await zipFile.file(fileName).async("string");
                     const rows = parseCSV(fileData);
-                    doordashData.consumer_order_details = rows.map(row => ({
-                        CREATED_AT: getColumnValue(row, 'CREATED_AT'),
-                        DELIVERY_TIME: getColumnValue(row, 'DELIVERY_TIME'),
-                        SUBTOTAL: getColumnValue(row, 'SUBTOTAL'),
-                        STORE_NAME: getColumnValue(row, 'STORE_NAME'),
-                        ITEM_NAME: getColumnValue(row, 'ITEM'),
-                        UNIT_PRICE: getColumnValue(row, 'UNIT_PRICE'),
-                        QUANTITY: getColumnValue(row, 'QUANTITY'),
-                    }));
+                    doordashData.consumer_order_details = rows.map(row => {
+                        const { zip, state } = parseUSZipAndState(getColumnValue(row, 'DELIVERY_ADDRESS'));
+                        return {
+                            CREATED_AT: getColumnValue(row, 'CREATED_AT'),
+                            DELIVERY_TIME: getColumnValue(row, 'DELIVERY_TIME'),
+                            SUBTOTAL: getColumnValue(row, 'SUBTOTAL'),
+                            STORE_NAME: getColumnValue(row, 'STORE_NAME'),
+                            ITEM_NAME: getColumnValue(row, 'ITEM'),
+                            UNIT_PRICE: getColumnValue(row, 'UNIT_PRICE'),
+                            QUANTITY: getColumnValue(row, 'QUANTITY'),
+                            DELIVERY_ZIP: zip,
+                            DELIVERY_STATE: state,
+                        };
+                    });
                     break;
                 }
             }
@@ -510,11 +535,62 @@ function processDoorDashData(zipFile) {
     });
 }
 
+// Parse a SheetJS workbook (already read from an .xlsx/.xls buffer) into grubhubData.
+function parseGrubhubWorkbook(workbook) {
+    const grubhubData = { orders: [], profile: null };
+
+    // Process Orders sheet
+    if (workbook.SheetNames.includes('Orders')) {
+        const ordersSheet = workbook.Sheets['Orders'];
+        const ordersRows = XLSX.utils.sheet_to_json(ordersSheet);
+
+        grubhubData.orders = ordersRows
+            .filter(row => {
+                // Filter out cancelled orders
+                const cancelledIndicator = getColumnValue(row, 'Cancelled Order Indicator');
+                return cancelledIndicator !== 'Yes' && cancelledIndicator !== 'true' && cancelledIndicator !== '1';
+            })
+            .map(row => ({
+                Order_Creation_Date: getColumnValue(row, 'Order Creation Date'),
+                Order_Delivery_Time: getColumnValue(row, 'Order Delivery Time'),
+                Browser_Type: getColumnValue(row, 'Browser Type'),
+                Order_Timezone: getColumnValue(row, 'Order Timezone'),
+                Cancelled_Order_Indicator: getColumnValue(row, 'Cancelled Order Indicator'),
+                Delivery_Address_Lat: getColumnValue(row, 'Delivery Address Lat'),
+                Delivery_Address_Lng: getColumnValue(row, 'Delivery Address Lng'),
+                Order_Total: getColumnValue(row, 'Order Total'),
+                Diner_Payment: getColumnValue(row, 'Diner Payment'),
+                Order_Payment_Method: getColumnValue(row, 'Order Payment Method'),
+                Order_Credit_Card_Type: getColumnValue(row, 'Order Credit Card Type'),
+                Order_Currency: getColumnValue(row, 'Order Currency'),
+                Restaurant_Zip_Code: getColumnValue(row, 'Restaurant Postal Code')
+            }));
+    }
+
+    // Process Profile sheet
+    if (workbook.SheetNames.includes('Profile')) {
+        const profileSheet = workbook.Sheets['Profile'];
+        const profileRows = XLSX.utils.sheet_to_json(profileSheet);
+
+        if (profileRows.length > 0) {
+            const profileRow = profileRows[0];
+            grubhubData.profile = {
+                Total_Lifetime_Orders: getColumnValue(profileRow, 'Total Lifetime Orders (excluding cancelled orders)'),
+                Lifetime_Total_Order: getColumnValue(profileRow, 'Lifetime Total Order ($)'),
+                Lifetime_Total_Promo: getColumnValue(profileRow, 'Lifetime Total Promo ($)'),
+                GH_Plus_Subscription: getColumnValue(profileRow, 'GH Plus Subscription')
+            };
+        }
+    }
+
+    return grubhubData;
+}
+
 function processGrubhubData(zipFile) {
     return new Promise(async (resolve, reject) => {
         try {
-            const grubhubData = { orders: [], profile: null };
-            
+            const emptyResult = { orders: [], profile: null };
+
             // Find Excel file
             let excelFile = null;
             for (const fileName of Object.keys(zipFile.files)) {
@@ -523,70 +599,61 @@ function processGrubhubData(zipFile) {
                     break;
                 }
             }
-            
+
             if (!excelFile) {
-                resolve(grubhubData);
+                resolve(emptyResult);
                 return;
             }
-            
+
             // Load Excel file as array buffer
             const excelBuffer = await zipFile.file(excelFile).async("arraybuffer");
-            
+
             // Check if XLSX library is available
             if (typeof XLSX === 'undefined') {
                 console.warn('XLSX library not loaded. Cannot parse Grubhub Excel file.');
-                resolve(grubhubData);
+                resolve(emptyResult);
                 return;
             }
-            
+
             const workbook = XLSX.read(excelBuffer, { type: 'array' });
-            
-            // Process Orders sheet
-            if (workbook.SheetNames.includes('Orders')) {
-                const ordersSheet = workbook.Sheets['Orders'];
-                const ordersRows = XLSX.utils.sheet_to_json(ordersSheet);
-                
-                grubhubData.orders = ordersRows
-                    .filter(row => {
-                        // Filter out cancelled orders
-                        const cancelledIndicator = getColumnValue(row, 'Cancelled Order Indicator');
-                        return cancelledIndicator !== 'Yes' && cancelledIndicator !== 'true' && cancelledIndicator !== '1';
-                    })
-                    .map(row => ({
-                        Order_Creation_Date: getColumnValue(row, 'Order Creation Date'),
-                        Order_Delivery_Time: getColumnValue(row, 'Order Delivery Time'),
-                        Order_Timezone: getColumnValue(row, 'Order Timezone'),
-                        Cancelled_Order_Indicator: getColumnValue(row, 'Cancelled Order Indicator'),
-                        Delivery_Address_Lat: getColumnValue(row, 'Delivery Address Lat'),
-                        Delivery_Address_Lng: getColumnValue(row, 'Delivery Address Lng'),
-                        Order_Total: getColumnValue(row, 'Order Total'),
-                        Diner_Payment: getColumnValue(row, 'Diner Payment'),
-                        Order_Payment_Method: getColumnValue(row, 'Order Payment Method')
-                    }));
-            }
-            
-            // Process Profile sheet
-            if (workbook.SheetNames.includes('Profile')) {
-                const profileSheet = workbook.Sheets['Profile'];
-                const profileRows = XLSX.utils.sheet_to_json(profileSheet);
-                
-                if (profileRows.length > 0) {
-                    const profileRow = profileRows[0];
-                    grubhubData.profile = {
-                        Total_Lifetime_Orders: getColumnValue(profileRow, 'Total Lifetime Orders (excluding cancelled orders)'),
-                        Lifetime_Total_Order: getColumnValue(profileRow, 'Lifetime Total Order ($)'),
-                        Lifetime_Total_Promo: getColumnValue(profileRow, 'Lifetime Total Promo ($)'),
-                        GH_Plus_Subscription: getColumnValue(profileRow, 'GH Plus Subscription')
-                    };
-                }
-            }
-            
-            resolve(grubhubData);
-        } catch (error) { 
+            resolve(parseGrubhubWorkbook(workbook));
+        } catch (error) {
             console.error('Error processing Grubhub data:', error);
-            reject(error); 
+            reject(error);
         }
     });
+}
+
+// Grubhub's DSAR export is a raw .xlsx/.xls file (not zipped); parse it directly.
+function processGrubhubExcelFile(file) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (typeof XLSX === 'undefined') {
+                console.warn('XLSX library not loaded. Cannot parse Grubhub Excel file.');
+                resolve({ orders: [], profile: null });
+                return;
+            }
+            const excelBuffer = await file.arrayBuffer();
+            const workbook = XLSX.read(excelBuffer, { type: 'array' });
+            resolve(parseGrubhubWorkbook(workbook));
+        } catch (error) {
+            console.error('Error processing Grubhub Excel file:', error);
+            reject(error);
+        }
+    });
+}
+
+function isExcelFileName(name) {
+    const lower = (name || '').toLowerCase();
+    return lower.endsWith('.xlsx') || lower.endsWith('.xls');
+}
+
+// Grubhub uploads may be a .zip (older export) or a raw .xlsx/.xls (current DSAR export).
+function processGrubhubUpload(file) {
+    if (isExcelFileName(file.name)) {
+        return processGrubhubExcelFile(file);
+    }
+    return JSZip.loadAsync(file).then(zipFile => processGrubhubData(zipFile));
 }
 
 function processInstacartOrdersCSV(csvText) {
@@ -621,6 +688,9 @@ function processInstacartDeliveriesCSV(csvText) {
             Delivery_Type: getColumnValue(row, 'Delivery Type'),
             Delivered_At: getColumnValue(row, 'Delivered At'),
             Order_Num: getColumnValue(row, 'Order Num'),
+            Weight: getColumnValue(row, 'Weight'),
+            Frozen_Items: getColumnValue(row, 'Frozen Items'),
+            Num_Bags: getColumnValue(row, 'Num Of Bags'),
         }));
     } catch (error) {
         throw error;
@@ -1020,8 +1090,7 @@ if (grubhubFileInput) {
         if (!file) return;
         document.getElementById("grubhubFileName").innerHTML = file.name;
         try {
-            const zipFile = await JSZip.loadAsync(file);
-            grubhubData = await processGrubhubData(zipFile);
+            grubhubData = await processGrubhubUpload(file);
             await validateAndProcessData();
         } catch (error) {
             grubhubData = null;
