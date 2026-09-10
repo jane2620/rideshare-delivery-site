@@ -12,6 +12,30 @@
     /** True after anonymized receipts JSON was successfully uploaded to S3 */
     let emailReceiptsJsonUploaded = false;
     let previewDirty = false;
+    /** "folder" (default) or "zip" */
+    let emailReceiptsUploadMode = "folder";
+
+    /**
+     * Build an in-memory .zip (as a Blob) from a folder's selected .eml files,
+     * so the existing zip-based processing pipeline can be reused unchanged.
+     */
+    async function buildZipFromFolderFiles(fileList) {
+        if (!window.JSZip) {
+            throw new Error("JSZip is not loaded. Please refresh the page.");
+        }
+        const emlFiles = Array.from(fileList || []).filter(function (f) {
+            return f.name.toLowerCase().endsWith(".eml");
+        });
+        if (emlFiles.length === 0) {
+            throw new Error("No .eml files found in the selected folder.");
+        }
+        const zip = new window.JSZip();
+        for (const file of emlFiles) {
+            const content = await file.text();
+            zip.file(file.name, content);
+        }
+        return await zip.generateAsync({ type: "blob" });
+    }
 
     function getProlificId() {
         const input = document.getElementById("emailInput");
@@ -42,6 +66,10 @@
         if (input) input.value = "";
         const nameSpan = document.getElementById("emailReceiptsZipFileName");
         if (nameSpan) nameSpan.innerText = "No file selected";
+        const folderInput = document.getElementById("emailReceiptsFolderInput");
+        if (folderInput) folderInput.value = "";
+        const folderNameSpan = document.getElementById("emailReceiptsFolderFileName");
+        if (folderNameSpan) folderNameSpan.innerText = "No folder selected";
         const previewTa = document.getElementById("emailReceiptsJsonPreview");
         if (previewTa) previewTa.value = "";
         const previewErr = document.getElementById("emailReceiptsPreviewError");
@@ -99,8 +127,13 @@
     }
 
     const emailReceiptsZipInput = document.getElementById("emailReceiptsZipInput");
+    const emailReceiptsFolderInput = document.getElementById("emailReceiptsFolderInput");
     const submitEmailReceiptsButton = document.getElementById("submitEmailReceiptsZipButton");
     const resetEmailReceiptsPreviewButton = document.getElementById("resetEmailReceiptsPreviewButton");
+    const emailReceiptsModeFolderButton = document.getElementById("emailReceiptsModeFolderButton");
+    const emailReceiptsModeZipButton = document.getElementById("emailReceiptsModeZipButton");
+    const emailReceiptsFolderInputField = document.getElementById("emailReceiptsFolderInputField");
+    const emailReceiptsZipInputField = document.getElementById("emailReceiptsZipInputField");
 
     if (!emailReceiptsZipInput || !submitEmailReceiptsButton) {
         return;
@@ -115,6 +148,29 @@
     }
     syncForwardedCheckboxOptionalSection();
 
+    function setEmailReceiptsUploadMode(mode) {
+        emailReceiptsUploadMode = mode;
+        clearOptionalReceiptsUploadState();
+        if (emailReceiptsFolderInputField) emailReceiptsFolderInputField.classList.toggle("hidden", mode !== "folder");
+        if (emailReceiptsZipInputField) emailReceiptsZipInputField.classList.toggle("hidden", mode !== "zip");
+        if (emailReceiptsModeFolderButton) emailReceiptsModeFolderButton.classList.toggle("is-selected", mode === "folder");
+        if (emailReceiptsModeFolderButton) emailReceiptsModeFolderButton.classList.toggle("is-primary", mode === "folder");
+        if (emailReceiptsModeZipButton) emailReceiptsModeZipButton.classList.toggle("is-selected", mode === "zip");
+        if (emailReceiptsModeZipButton) emailReceiptsModeZipButton.classList.toggle("is-primary", mode === "zip");
+        if (typeof validateAndProcessData === "function") validateAndProcessData();
+    }
+
+    if (emailReceiptsModeFolderButton) {
+        emailReceiptsModeFolderButton.addEventListener("click", function () {
+            setEmailReceiptsUploadMode("folder");
+        });
+    }
+    if (emailReceiptsModeZipButton) {
+        emailReceiptsModeZipButton.addEventListener("click", function () {
+            setEmailReceiptsUploadMode("zip");
+        });
+    }
+
     emailReceiptsZipInput.addEventListener("change", async function (event) {
         const file = event.target.files[0];
         emailReceiptsZipFile = file || null;
@@ -126,6 +182,44 @@
         }
         await refreshEmailReceiptsJsonPreview();
     });
+
+    if (emailReceiptsFolderInput) {
+        emailReceiptsFolderInput.addEventListener("change", async function (event) {
+            const files = event.target.files;
+            emailReceiptsJsonUploaded = false;
+            previewDirty = false;
+            const nameSpan = document.getElementById("emailReceiptsFolderFileName");
+            const previewErr = document.getElementById("emailReceiptsPreviewError");
+
+            if (!files || files.length === 0) {
+                emailReceiptsZipFile = null;
+                if (nameSpan) nameSpan.innerText = "No folder selected";
+                await refreshEmailReceiptsJsonPreview();
+                return;
+            }
+
+            const folderName = files[0].webkitRelativePath
+                ? files[0].webkitRelativePath.split("/")[0]
+                : "Selected folder";
+            const emlCount = Array.from(files).filter(function (f) {
+                return f.name.toLowerCase().endsWith(".eml");
+            }).length;
+            if (nameSpan) {
+                nameSpan.innerText = `${folderName} (${emlCount} .eml file${emlCount === 1 ? "" : "s"})`;
+            }
+
+            try {
+                emailReceiptsZipFile = await buildZipFromFolderFiles(files);
+            } catch (e) {
+                emailReceiptsZipFile = null;
+                if (previewErr) {
+                    previewErr.textContent = e.message || "Could not read the selected folder.";
+                    previewErr.classList.remove("hidden");
+                }
+            }
+            await refreshEmailReceiptsJsonPreview();
+        });
+    }
 
     const previewTa = document.getElementById("emailReceiptsJsonPreview");
     if (previewTa) {
@@ -158,7 +252,9 @@
 
         if (!emailReceiptsZipFile) {
             if (errorBox) {
-                errorBox.innerText = "Please choose a .zip file of .eml receipts first.";
+                errorBox.innerText = emailReceiptsUploadMode === "folder"
+                    ? "Please choose a folder of .eml receipts first."
+                    : "Please choose a .zip file of .eml receipts first.";
                 errorBox.classList.remove("hidden");
             }
             return;

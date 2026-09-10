@@ -27,7 +27,7 @@
                         <h1 class="title is-3">Upload Delivery Email Receipts</h1>
                         <p class="block">
                             This page is only for your <strong>email receipts</strong>. You will upload <strong>anonymized JSON</strong>
-                            generated locally from a .zip of .eml emails.
+                            generated locally from a folder (or .zip) of .eml emails.
                         </p>
                     </div>
                 </div>
@@ -68,6 +68,33 @@
                             </p> -->
 
                             <div class="field" style="margin-top: 1rem;">
+                                <label class="label is-size-6">Upload method</label>
+                                <div class="control">
+                                    <div class="buttons has-addons">
+                                        <button type="button" id="emailReceiptsModeFolderButton" class="button is-primary is-selected">
+                                            <span class="icon is-small"><i class="fas fa-folder-open"></i></span>
+                                            <span>Folder</span>
+                                        </button>
+                                        <button type="button" id="emailReceiptsModeZipButton" class="button">
+                                            <span class="icon is-small"><i class="fas fa-file-archive"></i></span>
+                                            <span>.zip file</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="field" id="emailReceiptsFolderInputField" style="margin-top: 1rem;">
+                                <label class="label is-size-6">Email receipts (folder of .eml files)</label>
+                                <div id="emailReceiptsFolderInputDiv" class="file is-primary has-name">
+                                    <label class="file-label">
+                                        <input id="emailReceiptsFolderInput" class="file-input" type="file" webkitdirectory directory multiple>
+                                        <span class="file-cta"><span class="file-icon"><i class="fas fa-upload"></i></span><span class="file-label">Choose folder</span></span>
+                                        <span id="emailReceiptsFolderFileName" class="file-name">No folder selected</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="field hidden" id="emailReceiptsZipInputField" style="margin-top: 1rem;">
                                 <label class="label is-size-6">Email receipts (.zip of .eml files)</label>
                                 <div id="emailReceiptsZipFileInputDiv" class="file is-primary has-name">
                                     <label class="file-label">

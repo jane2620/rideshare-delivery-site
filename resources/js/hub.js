@@ -287,9 +287,9 @@ function processUberData(zipFile) {
                 }
             }
             
-            // Trips - trips_data-0.csv
+            // Trips - rider_lifetime_trips
             for (const fileName of Object.keys(zipFile.files)) {
-                if (fileName.includes('trips_data') && fileName.endsWith('.csv')) {
+                if (fileName.includes('rider_lifetime_trips') && fileName.endsWith('.csv')) {
                     const fileData = await zipFile.file(fileName).async("string");
                     const rows = parseCSV(fileData);
                     
