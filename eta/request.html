@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Princeton University - Request Uber Data</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../resources/css/style.css">
+    <link rel="icon" href="../resources/images/favicon.ico" type="image/x-icon">
+    <style>
+        .page-title {
+            margin-bottom: 1.5rem !important;
+        }
+        .page-title + .subtitle {
+            margin-top: 0 !important;
+        }
+        .instruction-list {
+            padding-left: 1.25rem;
+            margin-left: 0.5rem;
+        }
+        .instruction-list li {
+            margin-bottom: 0.75rem;
+            overflow-wrap: break-word;
+        }
+        .email-query {
+            display: block;
+            background-color: #f5f5f5;
+            border: 1px solid #dbdbdb;
+            border-radius: 4px;
+            padding: 0.5rem 0.75rem;
+            margin-top: 0.5rem;
+            overflow-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <section class="page-content">
+        <div class="hero-body" style="padding-top: 2rem;">
+            <div class="columns is-mobile">
+                <div class="column is-2-tablet is-5-mobile is-offset-2-tablet" style="padding: 0;">
+                    <figure class="image">
+                        <img src="../resources/images/princeton-logo.png" alt="Princeton Logo">
+                    </figure>
+                </div>
+            </div>
+
+            <div class="columns is-centered">
+                <div class="column is-8">
+                    <div class="box">
+                        <h1 class="title is-3 page-title">Request your Uber and Uber Eats Data</h1>
+                        <p class="subtitle is-6">
+                            Click the button below to request your data and follow the instructions in Uber's privacy data.
+                            If you get lost, return to this page for more detailed instructions.
+                        </p>
+
+                        <div class="has-text-centered" style="margin: 1.5rem 0;">
+                            <a href="https://myprivacy.uber.com/exploreyourdata/download" target="_blank" rel="noopener" class="button is-link is-medium">
+                                Request your data
+                            </a>
+                            <p class="is-size-7" style="margin-top: 0.5rem;">(Data requests typically take 24-72 hours to process)</p>
+                        </div>
+
+                        <hr>
+
+                        <h2 class="title is-4">Detailed instructions</h2>
+                        <ol class="content instruction-list">
+                            <li>
+                                Navigate to
+                                <a href="https://myprivacy.uber.com/exploreyourdata/download" target="_blank" rel="noopener">https://myprivacy.uber.com/exploreyourdata/download</a>.
+                                You will be required to log in to your Uber account.
+                            </li>
+                            <li>
+                                Return to
+                                <a href="https://myprivacy.uber.com/exploreyourdata/download" target="_blank" rel="noopener">https://myprivacy.uber.com/exploreyourdata/download</a>
+                                after logging in (if you are not automatically redirected).
+                            </li>
+                            <li>
+                                Click <strong>&ldquo;Request&rdquo;</strong>. Note that you may have to wait 24&ndash;72 hours for your data
+                                to be ready. In our experience, this is closer to 24 hours.
+                            </li>
+                            <li>
+                                You will receive a notification via email when your data is ready. You can search for the email
+                                using this query:
+                                <span class="email-query">from:noreply@uber.com "data is ready for download"</span>
+                            </li>
+                        </ol>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>
