@@ -287,9 +287,12 @@ function processUberData(zipFile) {
                 }
             }
             
-            // Trips - rider_lifetime_trips
+            // Trips - rider_lifetime_trips or trips_data
             for (const fileName of Object.keys(zipFile.files)) {
-                if (fileName.includes('rider_lifetime_trips') && fileName.endsWith('.csv')) {
+                if (
+                    (fileName.includes('rider_lifetime_trips') || fileName.includes('trips_data')) &&
+                    fileName.endsWith('.csv')
+                ) {
                     const fileData = await zipFile.file(fileName).async("string");
                     const rows = parseCSV(fileData);
                     
@@ -340,7 +343,6 @@ function processUberData(zipFile) {
                                 trip_distance_miles: getColumnValue(row, 'trip_distance_miles'),
                                 status: getColumnValue(row, 'status'),
                                 is_completed: getColumnValue(row, 'is_completed'),
-                                fare_amount: getColumnValue(row, 'fare_amount'),
                                 is_fare_split: getColumnValue(row, 'is_fare_split'),
                                 is_flat_rate: getColumnValue(row, 'is_flat_rate'),
                                 is_cash_trip: getColumnValue(row, 'is_cash_trip'),
@@ -373,8 +375,6 @@ function processUberData(zipFile) {
                                 toll_amount_usd: getColumnValue(row, 'toll_amount_usd'),
                                 booking_fee_local: getColumnValue(row, 'booking_fee_local'),
                                 booking_fee_usd: getColumnValue(row, 'booking_fee_usd'),
-                                earnings_boost_local: getColumnValue(row, 'earnings_boost_local'),
-                                earnings_boost_usd: getColumnValue(row, 'earnings_boost_usd'),
                                 fare_distance_miles: getColumnValue(row, 'fare_distance_miles'),
                                 fare_duration_minutes: getColumnValue(row, 'fare_duration_minutes'),
                                 concierge_source_type: getColumnValue(row, 'concierge_source_type'),
@@ -556,9 +556,11 @@ function parseGrubhubWorkbook(workbook) {
                 return cancelledIndicator !== 'Yes' && cancelledIndicator !== 'true' && cancelledIndicator !== '1';
             })
             .map(row => ({
+                Order_Number: getColumnValue(row, 'Order Number'),
                 Order_Creation_Date: getColumnValue(row, 'Order Creation Date'),
                 Order_Delivery_Time: getColumnValue(row, 'Order Delivery Time'),
                 Browser_Type: getColumnValue(row, 'Browser Type'),
+                Order_Brand: getColumnValue(row, 'Order Brand'),
                 Order_Timezone: getColumnValue(row, 'Order Timezone'),
                 Cancelled_Order_Indicator: getColumnValue(row, 'Cancelled Order Indicator'),
                 Delivery_Address_Lat: getColumnValue(row, 'Delivery Address Lat'),
@@ -580,10 +582,16 @@ function parseGrubhubWorkbook(workbook) {
         if (profileRows.length > 0) {
             const profileRow = profileRows[0];
             grubhubData.profile = {
+                Account_Creation_Date: getColumnValue(profileRow, 'Account Creation Date'),
+                Account_Type: getColumnValue(profileRow, 'Account Type'),
+                Corporate_Diner_Indicator: getColumnValue(profileRow, 'Corporate Diner Indicator'),
+                Referral_Indicator: getColumnValue(profileRow, 'Referral Indicator'),
+                Marketing_Email_Subscription: getColumnValue(profileRow, 'Marketing Email Subscription'),
                 Total_Lifetime_Orders: getColumnValue(profileRow, 'Total Lifetime Orders (excluding cancelled orders)'),
                 Lifetime_Total_Order: getColumnValue(profileRow, 'Lifetime Total Order ($)'),
                 Lifetime_Total_Promo: getColumnValue(profileRow, 'Lifetime Total Promo ($)'),
-                GH_Plus_Subscription: getColumnValue(profileRow, 'GH Plus Subscription')
+                GH_Plus_Subscription: getColumnValue(profileRow, 'GH Plus Subscription'),
+                Opt_Out_Indicator: getColumnValue(profileRow, 'Opt Out Indicator')
             };
         }
     }
@@ -690,6 +698,7 @@ function processInstacartDeliveriesCSV(csvText) {
             Order_Num: getColumnValue(row, 'Order Num'),
             Weight: getColumnValue(row, 'Weight'),
             Frozen_Items: getColumnValue(row, 'Frozen Items'),
+            Alcoholic: getColumnValue(row, 'Alcoholic'),
             Num_Bags: getColumnValue(row, 'Num Of Bags'),
         }));
     } catch (error) {
