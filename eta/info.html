@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Princeton University - Uber and Uber Eats Data Fields</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../resources/css/style.css">
+    <link rel="icon" href="../resources/images/favicon.ico" type="image/x-icon">
+    <style>
+        .page-title {
+            margin-bottom: 1.5rem !important;
+        }
+        h2.section-heading {
+            margin-top: 2.5rem;
+        }
+        h3.table-heading {
+            margin-top: 1.75rem;
+            margin-bottom: 0.75rem;
+        }
+        .table-wrap {
+            overflow-x: auto;
+            margin-bottom: 1rem;
+        }
+        table.field-table {
+            width: 100%;
+        }
+        table.field-table th {
+            white-space: nowrap;
+        }
+        table.field-table td:first-child,
+        table.field-table th:first-child {
+            white-space: nowrap;
+        }
+        .omitted {
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <section class="page-content">
+        <div class="hero-body" style="padding-top: 2rem;">
+            <div class="columns is-mobile">
+                <div class="column is-2-tablet is-5-mobile is-offset-2-tablet" style="padding: 0;">
+                    <figure class="image">
+                        <img src="../resources/images/princeton-logo.png" alt="Princeton Logo">
+                    </figure>
+                </div>
+            </div>
+
+            <div class="columns is-centered">
+                <div class="column is-8">
+                    <div class="box">
+                        <h1 class="title is-3 page-title">Uber and Uber Eats</h1>
+
+                        <h2 class="title is-4 section-heading">Uber</h2>
+
+                        <h3 class="title is-5 table-heading">App data:</h3>
+                        <div class="table-wrap">
+                        <table class="table is-bordered is-striped is-narrow is-hoverable field-table">
+                            <thead>
+                                <tr><th>Field name</th><th>Example value</th><th>Notes</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>capturedAt</td><td>12:00 pm</td><td>Time of last upload</td></tr>
+                                <tr><td>prolific_id</td><td>1234abcd</td><td></td></tr>
+                                <tr><td>selected_ride_type</td><td>UberX</td><td></td></tr>
+                                <tr><td>surge_multiplier</td><td>1</td><td></td></tr>
+                                <tr><td>fare_estimate</td><td>14.46</td><td></td></tr>
+                                <tr><td>trip_requested_at</td><td>12:00 pm</td><td></td></tr>
+                                <tr><td>ontrip_observed_at</td><td>12:15 pm</td><td>Observed &ldquo;OnTrip&rdquo; from Uber&rsquo;s API (rider picked up)</td></tr>
+                                <tr><td>cancellation_info</td><td>null</td><td>Holds cancellation time and fee</td></tr>
+                                <tr><td>eta_pre_booking_min</td><td>3 min</td><td>ETA shown to user at checkout</td></tr>
+                                <tr><td>eta_at_match_min</td><td>4 min</td><td>ETA when driver matched</td></tr>
+                                <tr><td>pickup_coordinate</td><td>41.4928, -122.94920</td><td>Fuzzed deterministically +- 500m</td></tr>
+                                <tr><td>dropoff_coordinate</td><td>41.42928, -122.4390</td><td>Fuzzed deterministically +- 500m</td></tr>
+                                <tr><td>raw_product_list_html_at_booking</td><td></td><td>Full HTML of &ldquo;products&rdquo; view at checkout (ride types, prices, ETAs)</td></tr>
+                                <tr><td>searches[]</td><td></td><td>Array of 3 most recent searches, including the fuzzed coordinates of pickup, products, and selected ride type with ETA</td></tr>
+                                <tr><td>dispatch_eta_samples</td><td></td><td>ETA of driver over time at 1 minute intervals, including fuzzed coordinates</td></tr>
+                                <tr><td>status_transitions</td><td></td><td>Notes the time of when the user orders a rider, a driver is matched, and when the driver arrives</td></tr>
+                                <tr><td>ui_progress_snapshots</td><td></td><td>Pulls user-facing information from &ldquo;status&rdquo; display, such as &ldquo;Ride Requested&rdquo; and &ldquo;Pickup in 2 mins&rdquo;</td></tr>
+                                <tr><td>user_interactions</td><td>{index, phase, type, time}</td><td>Shows time and time of a user interaction, such as hiding the app, re-opening the app</td></tr>
+                                <tr><td>maps_estimation</td><td></td><td>Uses Google Routes API to estimate the time and distance between user and driver at 1 minute intervals</td></tr>
+                                <tr><td>product_catalog</td><td></td><td>Ride types, prices with fees, ETAs, and fuzzed locations for nearby vehicles</td></tr>
+                            </tbody>
+                        </table>
+                        </div>
+
+                        <h3 class="title is-5 table-heading">Data download: Rides</h3>
+                        <div class="table-wrap">
+                        <table class="table is-bordered is-striped is-narrow is-hoverable field-table">
+                            <thead>
+                                <tr><th>Field name</th><th>Example value</th><th>Notes</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>city_name</td><td>Princeton</td><td></td></tr>
+                                <tr><td>currency_code</td><td>USD</td><td></td></tr>
+                                <tr><td>timezone</td><td>EST</td><td></td></tr>
+                                <tr><td>client_device</td><td>m.uber.com</td><td></td></tr>
+                                <tr><td>product_type_name</td><td>UberX</td><td></td></tr>
+                                <tr><td>request_timestamp_local</td><td>12:00 pm</td><td></td></tr>
+                                <tr><td>request_timestamp_utc</td><td>5:00 pm</td><td></td></tr>
+                                <tr><td>request_lat</td><td>41.3891</td><td>Fuzzed deterministically +- 500m</td></tr>
+                                <tr><td>request_lng</td><td>-73.2930</td><td>Fuzzed deterministically +- 500m</td></tr>
+                                <tr><td>begintrip_timestamp_local</td><td>12:10 pm</td><td></td></tr>
+                                <tr><td>begintrip_timestamp_utc</td><td>5:10 pm</td><td></td></tr>
+                                <tr><td>begintrip_lat</td><td>41.3891</td><td>Fuzzed deterministically +- 500m</td></tr>
+                                <tr><td>begintrip_lng</td><td>-73.2930</td><td>Fuzzed deterministically +- 500m</td></tr>
+                                <tr><td>dropoff_timestamp_local</td><td>12:30 pm</td><td></td></tr>
+                                <tr><td>dropoff_timestamp_utc</td><td>5:30 pm</td><td></td></tr>
+                                <tr><td>dropoff_lat</td><td>41.4891</td><td>Fuzzed deterministically +- 500m</td></tr>
+                                <tr><td>dropoff_lng</td><td>-73.3930</td><td>Fuzzed deterministically +- 500m</td></tr>
+                                <tr><td>eta</td><td>1039</td><td>Duration (seconds) between driver accept and rider pickup</td></tr>
+                                <tr><td>surge_multiplier</td><td>1.0</td><td>Coefficient reflecting rider demand (higher = more rider demand)</td></tr>
+                                <tr><td>is_surged</td><td>False</td><td>Indicates whether or not the price of the trip was affected by high rider demand</td></tr>
+                                <tr><td>is_pool_matched</td><td>False</td><td>Indicates whether or not a ride is &ldquo;pooled&rdquo; with other riders (i.e., Uber Share)</td></tr>
+                                <tr><td>request_to_begin_distance_miles</td><td>0.24</td><td>Distance between where a ride was requested and where the ride began</td></tr>
+                                <tr><td>trip_distance_miles</td><td>5.68</td><td>Distance between ride pickup and ride dropoff</td></tr>
+                                <tr><td>status</td><td>Completed</td><td></td></tr>
+                                <tr><td>is_completed</td><td>True</td><td></td></tr>
+                                <tr><td>original_fare_local</td><td>10.00</td><td></td></tr>
+                                <tr><td>is_fare_split</td><td>False</td><td>Indicates whether fare was split across users</td></tr>
+                                <tr><td>is_flat_rate</td><td>False</td><td></td></tr>
+                                <tr><td>is_cash_trip</td><td>False</td><td></td></tr>
+                                <tr><td>client_app_version</td><td>3.6.3902</td><td>App version used for the order</td></tr>
+                                <tr><td>promotion_local</td><td>-3.00</td><td>Discount on the ride (local currency)</td></tr>
+                                <tr><td>promotion_usd</td><td>-3.00</td><td>Discount on the ride (USD)</td></tr>
+                                <tr><td>credits_local</td><td>1.00</td><td>Credits (e.g., from Uber One) applied to a ride (local currency)</td></tr>
+                                <tr><td>credits_usd</td><td>1.00</td><td>Credits (e.g., from Uber One) applied to a ride (USD)</td></tr>
+                                <tr><td>has_client_upfront_fare</td><td>True</td><td></td></tr>
+                                <tr><td>client_upfront_fare_local</td><td>10.00</td><td>Fare shown to user at booking time (local currency)</td></tr>
+                                <tr><td>client_upfront_fare_usd</td><td>10.00</td><td>Fare shown to user at booking time (USD)</td></tr>
+                                <tr><td>original_fare_local</td><td>10.00</td><td>Fare returned only for completed trips,  may factor in delays that change price (local currency)</td></tr>
+                                <tr><td>original_fare_usd</td><td>10.00</td><td>Fare returned only for completed trips,  may factor in delays that change price (USD)</td></tr>
+                                <tr><td>base_fare_local</td><td></td><td>Minimum price paid for a certain trip and ride (local currency)</td></tr>
+                                <tr><td>base_fare_usd</td><td></td><td>Minimum price paid for a certain trip and ride (USD)</td></tr>
+                                <tr><td>surge_fare_local</td><td></td><td>Additional fare due to surge multiplier (local currency)</td></tr>
+                                <tr><td>surge_fare_usd</td><td></td><td>Additional fare due to surge multiplier (USD)</td></tr>
+                                <tr><td>minimum_fare_roundup_local</td><td></td><td>Unknown</td></tr>
+                                <tr><td>minimum_fare_roundup_usd</td><td></td><td>Unknown</td></tr>
+                                <tr><td>per_mile_fare_local</td><td></td><td>Per mile rate for certain trip and ride type (local currency)</td></tr>
+                                <tr><td>per_mile_fare_usd</td><td></td><td>Per mile rate for certain trip and ride type (USD)</td></tr>
+                                <tr><td>cancellation_fee_local</td><td>0.00</td><td>Fee if user cancels (local currency)</td></tr>
+                                <tr><td>cancellation_fee_usd</td><td>0.00</td><td>Fee if user cancels (USD)</td></tr>
+                                <tr><td>rounding_down_amount_local</td><td></td><td>Unknown</td></tr>
+                                <tr><td>rounding_down_amount_usd</td><td></td><td>Unknown</td></tr>
+                                <tr><td>service_fee_local</td><td>1.0</td><td>Fee Uber collects for each ride (local currency)</td></tr>
+                                <tr><td>service_fee_usd</td><td>1.0</td><td>Fee Uber collects for each ride (USD)</td></tr>
+                                <tr><td>toll_amount_local</td><td>0.0</td><td>Any toll fees incurred on a ride (local currency)</td></tr>
+                                <tr><td>toll_amount_usd</td><td>0.0</td><td>Any toll fees incurred on a ride (USD)</td></tr>
+                                <tr><td>booking_fee_local</td><td>1.0</td><td>Fee Uber collects for each ride (local currency)</td></tr>
+                                <tr><td>booking_fee_usd</td><td>1.0</td><td>Fee Uber collects for each ride (USD)</td></tr>
+                                <tr><td>fare_distance_miles</td><td>5.68</td><td>Distance of trip in miles</td></tr>
+                                <tr><td>fare_duration_minutes</td><td></td><td>Duration of trip in minutes</td></tr>
+                                <tr><td>concierge_source_type</td><td></td><td>unknown</td></tr>
+                                <tr><td>wait_time_fare_local</td><td>0.75</td><td>Cost incurred for arriving late to be picked up (local currency)</td></tr>
+                                <tr><td>wait_time_fare_usd</td><td>0.75</td><td>Cost incurred for arriving late to be picked up (USD)</td></tr>
+                                <tr><td>driver_cancellation_reason</td><td></td><td>Reason for driver cancelling on a rider</td></tr>
+                                <tr><td>is_multidestination</td><td>False</td><td>Indicator for whether a trip has multiple stops</td></tr>
+                                <tr><td>long_distance_surcharge_local</td><td>0.0</td><td>Dynamic fee for long distance rides (local currency)</td></tr>
+                                <tr><td>long_distance_surcharge_usd</td><td>0.0</td><td>Dynamic fee for long distance rides (USD)</td></tr>
+                                <tr><td>cancellation_type</td><td>requester_canceled</td><td>Indicates if requester (user) or driver canceled</td></tr>
+                                <tr><td>is_directed_dispatch_trip</td><td>False</td><td></td></tr>
+                                <tr><td>wait_duration_minutes</td><td>1.0</td><td>Time driver spent waiting, past acceptable threshold (e.g., 2 minutes for UberX)</td></tr>
+                                <tr><td>is_scheduled_trip</td><td>False</td><td>Indicates whether the user scheduled the trip ahead of time</td></tr>
+                                <tr><td>is_airport_trip</td><td>False</td><td>Indicates whether the trip origin and/or dropoff is at an airport</td></tr>
+                            </tbody>
+                        </table>
+                        </div>
+
+                        <h3 class="title is-5 table-heading">Profile:</h3>
+                        <div class="table-wrap">
+                        <table class="table is-bordered is-striped is-narrow is-hoverable field-table">
+                            <thead>
+                                <tr><th>Field name</th><th>Example value</th><th>Notes</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Rating</td><td>4.75</td><td></td></tr>
+                            </tbody>
+                        </table>
+                        </div>
+
+                        <div class="omitted">
+                            <p><strong>Omitted Fields:</strong></p>
+                            <p>Rides:</p>
+                            <p>Profile: First Name, Last Name, Email, Mobile, User Type, Country, First Payment Method Added Timestamp, Has Confirmed Mobile, Referred to Uber?, Language, Referral Code, Signup App Version, Signup City, Signup Form, Signup Lat, Signup Long, Signup Date</p>
+                        </div>
+
+                        <h2 class="title is-4 section-heading">Uber Eats</h2>
+
+                        <h3 class="title is-5 table-heading">App data:</h3>
+                        <div class="table-wrap">
+                        <table class="table is-bordered is-striped is-narrow is-hoverable field-table">
+                            <thead>
+                                <tr><th>Field name</th><th>Example value</th><th>Notes</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>capturedAt</td><td>12:00 pm</td><td>Time of last upload</td></tr>
+                                <tr><td>prolific_id</td><td>1234abcd</td><td></td></tr>
+                                <tr><td>eta_window</td><td>10-26 min</td><td>ETA show to user at checkout</td></tr>
+                                <tr><td>outcome</td><td>order_completed</td><td></td></tr>
+                                <tr><td>order_confirmed_at</td><td>12:00 pm</td><td>Time of order</td></tr>
+                                <tr><td>upfront_tip</td><td>200</td><td>Amount user tipped (in cents)</td></tr>
+                                <tr><td>selected_delivery_label</td><td>Standard</td><td>Delivery type (Priority, Standard)</td></tr>
+                                <tr><td>delivery_opt_in_info</td><td></td><td>More detailed delivery option information, such as &ldquo;Direct to you&rdquo; label on Priority. Includes ETAs</td></tr>
+                                <tr><td>maps_estimation</td><td></td><td>Uses Google Routes API to estimate the time and distance between user and driver at 1 minute intervals</td></tr>
+                                <tr><td>activeOrderStatusDelayType</td><td>VERY_SMALL_DELAY</td><td>Flag that indicates how on-time Uber expects the order to be</td></tr>
+                                <tr><td>store_name</td><td>Safeway</td><td></td></tr>
+                                <tr><td>store_latitude</td><td>39.9484</td><td></td></tr>
+                                <tr><td>store_longitude</td><td>-74.8309</td><td></td></tr>
+                                <tr><td>orderCategory</td><td>GROCERY</td><td></td></tr>
+                                <tr><td>statusCard</td><td></td><td>User-facing order status, containing ETA and description (e.g., &ldquo;Delivery time is a prediction&hellip;&rdquo;</td></tr>
+                                <tr><td>order_status</td><td>PREPARING</td><td>Confirming, Preparing, EnrouteToPickup, EnrouteToDropoff</td></tr>
+                                <tr><td>store_page_snapshot</td><td></td><td>Detailed information about the store, such as service fee, earliest arrival time, promotions</td></tr>
+                                <tr><td>checkout_disclaimers</td><td></td><td>Disclaimers shown to users at checkout. E.g., &ldquo;Promotions are estimates, not guaranteed&hellip;&rdquo;</td></tr>
+                                <tr><td>fare_breakdown</td><td></td><td>Includes detailed fees and descriptions, such as delivery fee, service fee, taxes, and promotions</td></tr>
+                                <tr><td>order_completed_at</td><td>12:00 pm</td><td></td></tr>
+                            </tbody>
+                        </table>
+                        </div>
+
+                        <h3 class="title is-5 table-heading">Data download: Orders</h3>
+                        <div class="table-wrap">
+                        <table class="table is-bordered is-striped is-narrow is-hoverable field-table">
+                            <thead>
+                                <tr><th>Field name</th><th>Example value</th><th>Notes</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>City_name</td><td>Princeton</td><td></td></tr>
+                                <tr><td>Restaurant_name</td><td>McDonald&rsquo;s</td><td></td></tr>
+                                <tr><td>Request_Time_Local</td><td>12:00 pm</td><td></td></tr>
+                                <tr><td>Final_Delivery_Time_Local</td><td>12:30 pm</td><td></td></tr>
+                                <tr><td>Order_Status</td><td>Completed</td><td></td></tr>
+                                <tr><td>Customization_Cost_local</td><td>3.50</td><td></td></tr>
+                                <tr><td>Item_Price</td><td>6.00</td><td></td></tr>
+                                <tr><td>Item_quantity</td><td>1</td><td></td></tr>
+                                <tr><td>Order_price</td><td>15.00</td><td></td></tr>
+                                <tr><td>Currency</td><td>USD</td><td></td></tr>
+                            </tbody>
+                        </table>
+                        </div>
+
+                        <p>Profile: same as Uber, above</p>
+
+                        <div class="omitted">
+                            <p><strong>Omitted fields:</strong> Special Instructions, Restaurant Name</p>
+                            <p>Orders: Special Instructions, Restaurant Name</p>
+                            <p>Profile: same as above</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

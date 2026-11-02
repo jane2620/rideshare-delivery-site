@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Princeton University - Delivery Data Fields</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../resources/css/style.css">
+    <link rel="icon" href="../resources/images/favicon.ico" type="image/x-icon">
+    <style>
+        .page-title {
+            margin-bottom: 1.5rem !important;
+        }
+        h2.section-heading {
+            margin-top: 2.5rem;
+        }
+        h3.table-heading {
+            margin-top: 1.75rem;
+            margin-bottom: 0.75rem;
+        }
+        .table-wrap {
+            overflow-x: auto;
+            margin-bottom: 1rem;
+        }
+        table.field-table {
+            width: 100%;
+        }
+        table.field-table th {
+            white-space: nowrap;
+        }
+        table.field-table td:first-child,
+        table.field-table th:first-child {
+            white-space: nowrap;
+        }
+        .omitted {
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
+        }
+        .note {
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <section class="page-content">
+        <div class="hero-body" style="padding-top: 2rem;">
+            <div class="columns is-mobile">
+                <div class="column is-2-tablet is-5-mobile is-offset-2-tablet" style="padding: 0;">
+                    <figure class="image">
+                        <img src="../resources/images/princeton-logo.png" alt="Princeton Logo">
+                    </figure>
+                </div>
+            </div>
+
+            <div class="columns is-centered">
+                <div class="column is-8">
+                    <div class="box">
+                        <h1 class="title is-3 page-title">Instacart, Grubhub, and DoorDash</h1>
+
+                        <h3 class="title is-5 table-heading">Instacart, Grubhub, and DoorDash email data:</h3>
+                        <div class="table-wrap">
+                        <table class="table is-bordered is-striped is-narrow is-hoverable field-table">
+                            <thead>
+                                <tr><th>Field name</th><th>Example value</th><th>Notes</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>prolific_ID</td><td>1234abcd</td><td>Parsed from email subject line or &ldquo;NOT FOUND&rdquo;</td></tr>
+                                <tr><td>original_subject</td><td>Thank you for your order</td><td></td></tr>
+                                <tr><td>processed_at</td><td>12-01-2026</td><td>Time script processed email</td></tr>
+                                <tr><td>receipt_count</td><td>3</td><td>Number of receipts in the submission</td></tr>
+                            </tbody>
+                        </table>
+                        </div>
+
+                        <p class="note">For email receipts, we only choose to &ldquo;search&rdquo; for key fields (ETA windows, order times, store names) to avoid unintentionally collecting any personally identifiable information.</p>
+
+                        <h2 class="title is-4 section-heading">Instacart</h2>
+
+                        <h3 class="title is-5 table-heading">Email data:</h3>
+                        <div class="table-wrap">
+                        <table class="table is-bordered is-striped is-narrow is-hoverable field-table">
+                            <thead>
+                                <tr><th>Field name</th><th>Example value</th><th>Notes</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>receipt_index</td><td>1</td><td></td></tr>
+                                <tr><td>sent_at_utc</td><td>12:00 am</td><td>Taken from email&rsquo;s date header</td></tr>
+                                <tr><td>platform</td><td>instacart</td><td></td></tr>
+                                <tr><td>email_type</td><td>receipt</td><td>Confirmation, receipt, or cancellation</td></tr>
+                                <tr><td>store</td><td>Safeway</td><td>From confirmation subject line or receipt body</td></tr>
+                                <tr><td>is_pickup</td><td>False</td><td>keyword-based</td></tr>
+                                <tr><td>is_scheduled</td><td>True</td><td>keyword-based</td></tr>
+                                <tr><td>is_delivery</td><td>true</td><td>keyword-based</td></tr>
+                                <tr><td>order_date</td><td>12-01-2026</td><td>Receipt emails only</td></tr>
+                                <tr><td>delivery_date</td><td>12-01-2026</td><td>Scheduled date (confirmations) or actual delivery date (receipts)</td></tr>
+                                <tr><td>delivery_time_local</td><td>12:43 pm</td><td>Actual delivery time (receipts)</td></tr>
+                                <tr><td>eta_window</td><td>9:00 am &ndash; 12:00 pm</td><td>Confirmation emails</td></tr>
+                                <tr><td>total</td><td>$10.00</td><td></td></tr>
+                            </tbody>
+                        </table>
+                        </div>
+
+                        <h3 class="title is-5 table-heading">Data download:</h3>
+                        <div class="table-wrap">
+                        <table class="table is-bordered is-striped is-narrow is-hoverable field-table">
+                            <thead>
+                                <tr><th>Field name</th><th>Example value</th><th>Notes</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Currency</td><td>USD</td><td></td></tr>
+                                <tr><td>Delivery Date</td><td>12-01-2026</td><td></td></tr>
+                                <tr><td>Initial_Tip_Type</td><td></td><td></td></tr>
+                                <tr><td>Order_Num</td><td>1</td><td>Allows linkage across fields</td></tr>
+                                <tr><td>Reconciled_Total</td><td>$10.00</td><td></td></tr>
+                                <tr><td>Reconciliation_Coupon_Discount</td><td>-$3.00</td><td></td></tr>
+                                <tr><td>Sales_Tax</td><td>$0.60</td><td></td></tr>
+                                <tr><td>Delivered_At</td><td>12:43:08 PM</td><td></td></tr>
+                                <tr><td>Completed At</td><td>12:43:08 PM</td><td></td></tr>
+                                <tr><td>Weight</td><td>1.6</td><td></td></tr>
+                                <tr><td>Frozen_items</td><td>False</td><td></td></tr>
+                                <tr><td>Alcoholic</td><td>False</td><td></td></tr>
+                                <tr><td>Allow Replacements</td><td>True</td><td></td></tr>
+                            </tbody>
+                        </table>
+                        </div>
+
+                        <div class="omitted">
+                            <p><strong>Omitted fields:</strong> Verified Replacements Source, Delivery Recipient Name, Text Reminder, Contact Pref, Can Contact</p>
+                        </div>
+
+                        <h2 class="title is-4 section-heading">DoorDash</h2>
+
+                        <h3 class="title is-5 table-heading">Email data:</h3>
+                        <div class="table-wrap">
+                        <table class="table is-bordered is-striped is-narrow is-hoverable field-table">
+                            <thead>
+                                <tr><th>Field name</th><th>Example value</th><th>Notes</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>receipt_index</td><td>1</td><td></td></tr>
+                                <tr><td>sent_at_utc</td><td>12:00 am</td><td>Taken from email&rsquo;s date header</td></tr>
+                                <tr><td>platform</td><td>Doordash</td><td></td></tr>
+                                <tr><td>email_type</td><td>receipt</td><td>Confirmation, receipt, or cancellation</td></tr>
+                                <tr><td>store</td><td>Safeway</td><td>From confirmation subject line or receipt body</td></tr>
+                                <tr><td>is_pickup</td><td>False</td><td>keyword-based</td></tr>
+                                <tr><td>is_scheduled</td><td>True</td><td>keyword-based</td></tr>
+                                <tr><td>is_delivery</td><td>true</td><td>keyword-based</td></tr>
+                                <tr><td>delivery_date</td><td>Dec 1</td><td>First month and day found in email; may not be true date</td></tr>
+                                <tr><td>eta_window</td><td>12:30 pm - 12:45 pm</td><td></td></tr>
+                                <tr><td>total</td><td>$10.00</td><td></td></tr>
+                            </tbody>
+                        </table>
+                        </div>
+
+                        <h3 class="title is-5 table-heading">Data download:</h3>
+                        <div class="table-wrap">
+                        <table class="table is-bordered is-striped is-narrow is-hoverable field-table">
+                            <thead>
+                                <tr><th>Field name</th><th>Example value</th><th>Notes</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>DELIVERY_TIME</td><td>12:43:08 PM</td><td></td></tr>
+                                <tr><td>SUBTOTAL</td><td>10.00</td><td></td></tr>
+                                <tr><td>STORE_NAME</td><td>McDonald&rsquo;s</td><td></td></tr>
+                                <tr><td>ITEM_NAME</td><td>Hamburger</td><td></td></tr>
+                                <tr><td>UNIT_PRICE</td><td>5.00</td><td></td></tr>
+                                <tr><td>QUANTITY</td><td>2</td><td></td></tr>
+                                <tr><td>DELIVERY_ZIP</td><td>08544</td><td>Mapped from delivery address</td></tr>
+                                <tr><td>DELIVERY_STATE</td><td>New Jersey</td><td>Mapped from delivery address</td></tr>
+                            </tbody>
+                        </table>
+                        </div>
+
+                        <div class="omitted">
+                            <p><strong>Omitted fields:</strong> DELIVERY_ADDRESS</p>
+                        </div>
+
+                        <h2 class="title is-4 section-heading">Grubhub</h2>
+
+                        <h3 class="title is-5 table-heading">Email data:</h3>
+                        <div class="table-wrap">
+                        <table class="table is-bordered is-striped is-narrow is-hoverable field-table">
+                            <thead>
+                                <tr><th>Field name</th><th>Example value</th><th>Notes</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>receipt_index</td><td>1</td><td></td></tr>
+                                <tr><td>sent_at_utc</td><td>12:00 am</td><td>Taken from email&rsquo;s date header</td></tr>
+                                <tr><td>sent_at_local</td><td>7:00 pm</td><td>Send time converted using offset from structured delivery data</td></tr>
+                                <tr><td>timezone</td><td>UTC-5:00</td><td></td></tr>
+                                <tr><td>platform</td><td>grubhub</td><td></td></tr>
+                                <tr><td>email_type</td><td>confirmation</td><td>Confirmation, receipt, cancellation, or unknown</td></tr>
+                                <tr><td>store</td><td>Safeway</td><td>From subject line or body</td></tr>
+                                <tr><td>is_pickup</td><td>False</td><td>keyword-based</td></tr>
+                                <tr><td>is_scheduled</td><td>True</td><td>keyword-based</td></tr>
+                                <tr><td>is_delivery</td><td>true</td><td>keyword-based</td></tr>
+                                <tr><td>delivery_date</td><td>Dec 1</td><td>First month and day found in email; may not be true date</td></tr>
+                                <tr><td>eta_window</td><td>12:30 pm - 12:45 pm</td><td>From email&rsquo;s structured delivery data</td></tr>
+                                <tr><td>total</td><td>$10.00</td><td></td></tr>
+                            </tbody>
+                        </table>
+                        </div>
+
+                        <p class="note">Note: Grubhub emails send structured data within their emails, allowing for easier parsing of send time, timezone, and eta windows than other platforms.</p>
+
+                        <h3 class="title is-5 table-heading">Data download: Orders</h3>
+                        <div class="table-wrap">
+                        <table class="table is-bordered is-striped is-narrow is-hoverable field-table">
+                            <thead>
+                                <tr><th>Field name</th><th>Example value</th><th>Notes</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Order Number</td><td>123456</td><td></td></tr>
+                                <tr><td>Order_Creation_Date</td><td>12-01-2026</td><td></td></tr>
+                                <tr><td>Order_Delivery_Time</td><td>12:00 pm</td><td></td></tr>
+                                <tr><td>Order Brand</td><td>grubhub</td><td></td></tr>
+                                <tr><td>Browser_Type</td><td>Mobile Safari</td><td></td></tr>
+                                <tr><td>Order_Timezone</td><td>EST</td><td></td></tr>
+                                <tr><td>Cancelled_Order_Indicator</td><td>False</td><td></td></tr>
+                                <tr><td>Delivery_Address_Lat</td><td>41.93039</td><td>Fuzzed deterministically +- 500m</td></tr>
+                                <tr><td>Delivery_Address_Lng</td><td>-73.19830</td><td>Fuzzed deterministically +- 500m</td></tr>
+                                <tr><td>Order_Total</td><td>10.00</td><td></td></tr>
+                                <tr><td>Diner_Payment</td><td>10.00</td><td></td></tr>
+                                <tr><td>Restaurant_Name</td><td>McDonald&rsquo;s</td><td></td></tr>
+                                <tr><td>Restaurant_Zip_Code</td><td>08544</td><td>Parsed from restaurant lat/lon</td></tr>
+                                <tr><td>Order_Payment_Method</td><td>Apple Pay</td><td></td></tr>
+                                <tr><td>Order_Credit_Card_Type</td><td>Amex</td><td>Does not reveal any CC number info</td></tr>
+                            </tbody>
+                        </table>
+                        </div>
+
+                        <h3 class="title is-5 table-heading">Profile:</h3>
+                        <div class="table-wrap">
+                        <table class="table is-bordered is-striped is-narrow is-hoverable field-table">
+                            <thead>
+                                <tr><th>Field name</th><th>Example value</th><th>Notes</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Total_Lifetime_Orders</td><td>10</td><td></td></tr>
+                                <tr><td>Lifetime_Total_Order ($)</td><td>100.00</td><td></td></tr>
+                                <tr><td>Lifetime_Total_Promo</td><td>12.34</td><td></td></tr>
+                                <tr><td>Account Creation Date</td><td>12-01-2026</td><td></td></tr>
+                                <tr><td>Account Type</td><td>consumer</td><td></td></tr>
+                                <tr><td>Corporate Diner Indicator</td><td>False</td><td></td></tr>
+                                <tr><td>Referral Indicator</td><td>False</td><td></td></tr>
+                                <tr><td>Marketing Email Subscription</td><td>False</td><td></td></tr>
+                                <tr><td>GH_Plus_Subscription</td><td>True</td><td></td></tr>
+                                <tr><td>Opt Out Indicator</td><td>False</td><td></td></tr>
+                            </tbody>
+                        </table>
+                        </div>
+
+                        <div class="omitted">
+                            <p><strong>Omitted fields:</strong></p>
+                            <p>Orders: Order Instructions, Device Type, Device OS, Order brand, Order Email, Order Phone Number, Delivery Address, Restaurant Address, Restaurant City</p>
+                            <p>Profile: First Name, Last Name, Unique ID, Venmo Username, Diner Brand, Email, Diner Saved Addresses, Last Login, First Order Date</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
