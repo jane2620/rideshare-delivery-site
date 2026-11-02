@@ -353,6 +353,7 @@ function processUberData(zipFile) {
                                 has_client_upfront_fare: getColumnValue(row, 'has_client_upfront_fare'),
                                 client_upfront_fare_local: getColumnValue(row, 'client_upfront_fare_local'),
                                 client_upfront_fare_usd: getColumnValue(row, 'client_upfront_fare_usd'),
+                                ufp_type: getColumnValue(row, 'ufp_type'),
                                 original_fare_local: getColumnValue(row, 'original_fare_local'),
                                 original_fare_usd: getColumnValue(row, 'original_fare_usd'),
                                 base_fare_local: getColumnValue(row, 'base_fare_local'),
